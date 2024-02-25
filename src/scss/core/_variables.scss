@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani&family=Reem+Kufi+Fun:wght@400..700&family=Roboto&display=swap');
+
+$font-outfit: 'Orbitron', sans-serif;
+$font-logo: 'Reem Kufi Fun', sans-serif;
+$font-outfit: 'Orbitron', sans-serif;
+$font-logo: 'Reem Kufi Fun', sans-serif;
+
+$color-theme: #20D3C2;
+$color-theme-light: #EDFCFA;
+$color-theme-dark: #272727;
+$color-theme-dark-light: #50546E;
+$color-dark: #272727;
+$color-light:  #7d91ba;
+$color-white: #FFFFFF;
+$color-gray-0: #AAAAAA;
+$color-gray-1: #CCCCCC;
+$color-gray-2: #E3E3E3;
+$color-gray-3: #EEEEEE;
+$color-gray-4: #F6F6F6;
+$color-gray-5: #777777;
+$color-product-instock: #82D8C6;
+$color-product-outofstock: #FE6C6C;
+
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+$font-weight-extra-bold: 800;
+$font-weight-black: 900;
+$font-size-small: 0.8rem;
+$font-size-14: 1.17rem;
+$font-size-16: 1.33rem;
+$font-size-18: 1.50rem;
+$font-size-24: 2rem;
+$font-size-36: 3rem;
+$font-size-60: 5rem;
+
+$border-radius-small: 8px;
+$border-radius-medium: 25px;
+$border-radius-rounded: 50px;
+
+/* general */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html,
+body {
+    font-size: 16px;
+    line-height: 1.5;
+    font-family: $font-outfit;
+    font-weight: $font-weight-regular;
+    color: $color-light;
+    background-color: $color-dark;
+}

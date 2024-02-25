@@ -1,0 +1,169 @@
+.navbar {
+    background-color: #8c1616 ;
+    padding: 10px 0;
+    position: relative;
+}
+
+.logo {
+
+font-family: $font-logo;
+font-size: 54px;
+
+.subtitle {
+    display: block; 
+    margin-top: -20px; 
+    font-size: 20px; // adjust as needed
+    text-transform: lowercase; // for small caps
+}
+
+
+    img {
+        width: 251px;
+        height: auto;
+    }
+}
+
+// Hamburger menu styles
+.menu-toggle {
+    width: 31px;
+    height: 22px;
+    position: relative;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 9999; 
+
+    &:before, &:after, & > div {
+        content: "";
+        background-color: #fff;
+        height: 3px;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        transition: all 0.3s;
+    }
+
+    &:before { top: 0; }
+    & > div {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    &:after { bottom: 0; }
+
+    &.open {
+        &:before {
+            transform: rotate(45deg);
+            top: 50%;
+        }
+
+        & > div { opacity: 0; }
+
+        &:after {
+            transform: rotate(-45deg);
+            bottom: 50%;
+        }
+    }
+
+    @media (min-width: 768px) {
+        display: none;
+    }
+}
+.menu-groups {
+    display: none; // Hidden by default for mobile
+    position: absolute;
+    top: 50%;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    @include border-radius(5px);
+    margin-top: 45px;
+
+    &.open { 
+        display: flex;
+        flex-direction: column;
+    }
+
+    @media (min-width: 768px) {
+        position: static;
+        display: flex; // Display menu-groups on desktop
+        flex-direction: row;
+        gap: 20px;
+        background-color: transparent;
+    }
+}
+
+.menu-group {
+    list-style: none;
+    display: flex; // Make the li items within menu-group to line up in a row
+
+    li {
+        margin: 10px 0;
+        @media (min-width: 768px) {
+            margin: 0 10px;
+        }
+    }
+
+    a {
+        text-decoration: none;
+        color: #b4bccd;
+        padding: 5px 10px;
+
+        &:hover {
+            color: #7796da;
+            transition: all ease-out 0.2s;
+        }
+    }
+    @media (max-width: 767px) {
+        display: block; // Stack vertically in mobile view
+    }
+}
+
+.center {
+    order: 2;
+
+    @media (min-width: 768px) {
+        order: 1;
+    }
+}
+
+.right {
+    order: 1;
+
+    @media (min-width: 768px) {
+        order: 2;
+    }
+
+    li {
+        .dropdown-icon {
+          display: block;
+        }
+          
+        .dropdown-icon.open {
+          display: block; // Show when open
+        }
+    
+        .dropdown-menu {
+          display: block; // Hide by default
+          position: absolute;
+          border-radius: 0;
+          
+          background-color: #b67676;
+          min-width: 160px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          z-index: 1;
+        }
+          
+        .dropdown-menu a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+          
+        .dropdown-menu a:hover {
+          background-color: #f1f1f1;
+        }
+      }
+}
+
+
+

@@ -1,0 +1,23 @@
+@import './core/variables';
+@import './core/mixins';
+@import './sections/Navbar';
+@import './sections/SignUp';
+@import './sections/GoogleSignInButton';
+@import './sections/ResetPassword';
+@import './sections/CreateProfile';
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 1290px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+

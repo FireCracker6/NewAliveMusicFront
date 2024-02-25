@@ -1,0 +1,80 @@
+.modal-close-button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    cursor: pointer;
+    outline: none;
+    color: #aaa;
+
+    &:hover {
+        color: #777;
+    }
+}
+
+.sign-up-container.modal{
+    width: 50%;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #000000;
+    z-index: 9999;
+}
+.reset-password-container.modal{
+    width: 50%;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #000000;
+    z-index: 9999;
+}
+.form-label-top {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background-color: white;
+    padding: 0 5px;
+}
+
+.icon-right {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: #ccc;
+}
+
+.form-control {
+    border: 1px solid #e1e1e1;
+    padding-right: 35px; // give space for the icon on the right
+    &:focus {
+        border-color: #007bff; // Adjust the color based on your design.
+    }
+}
+
+.btn-secondary {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    &:hover {
+        background-color: darken(#007bff, 10%);
+    }
+}
+.remember-me {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    font-size: $font-size-small;
+}
+
+
+// For mobile responsiveness
+@media (max-width: 576px) {
+    .sign-up-container.modal {
+        width: 90%;
+    }
+}

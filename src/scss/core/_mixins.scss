@@ -1,0 +1,20 @@
+@mixin reset-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @mixin border-radius($radius) {
+    -webkit-border-radius: $radius;
+       -moz-border-radius: $radius;
+        -ms-border-radius: $radius;
+            border-radius: $radius;
+  }
+  @mixin media-query($device) {
+    @if $device == "tablet" {
+      @media (max-width: 800px) { @content; }
+    }
+    @else if $device == "phone" {
+      @media (max-width: 500px) { @content; }
+    }
+  }
+  
