@@ -8,6 +8,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('userJWTToken');
+    console.log(token)
     if (token) {
       fetchUserInfo(token).then(fetchedUser => {
         if (fetchedUser) {

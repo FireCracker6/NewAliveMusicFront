@@ -1,0 +1,39 @@
+.profile-form-button {
+   //grid-area: button;
+    justify-self: center;
+    align-self: center;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    font-size:  18px;
+    background-color: #9ea0aa;
+    border: none !important;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    &:hover {
+        background-color: #72747d;
+        transition: all 0.2s ease-in-out;
+    }
+}
+
+.upload-form-button {
+    //grid-area: button;
+     justify-self: center;
+     align-self: center;
+     width: 250px;
+     margin-top: 10px;
+margin-right: 20px;
+     padding: 10px;
+     font-size:  16px;
+     background-color: #317b3d;
+     border: 2px solid #748176;
+     border-radius: 2px;
+     cursor: pointer;
+     transition: background-color 0.3s ease;
+     &:hover {
+         background-color: #113f18;
+         color: #7c9980;
+         transition: all 0.2s ease-in-out;
+     }
+ }

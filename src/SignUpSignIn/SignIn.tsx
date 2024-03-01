@@ -148,49 +148,54 @@ const loadGoogleScript = (callback: ((this: GlobalEventHandlers, ev: Event) => a
     script.onload = callback;
     document.body.appendChild(script);
 };
+
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     if (emailError || passwordError) {
-        console.error("Validation errors present");
-        console.log(emailError, passwordError);
-
-        return;
+      console.error("Validation errors present");
+      console.log(emailError, passwordError);
+  
+      return;
     }
     
     try {
-        // Call your API endpoint for sign-in
-        const response = await axios.post('http://192.168.1.80:5053/api/users/login', {
-          email: email,
-          password: password,
-          rememberme: rememberme 
-        });
-      
-        if (response.status === 200) {
-          const token = response.data.token; // Corrected token access
-      
-          if (typeof token !== 'string') {
-            console.error('Token is not a string:', token);
-            return;
-          }
-      
-          try {
-            const userInfo = await fetchUserInfo(token);
-            if (userInfo) {
-              setUserWithLocalStorage(userInfo); // Store user data in localStorage
-              navigate('/dashboard');
-            }
-          } catch (error) {
-            console.error("Error fetching user info:", error);
-          }
-      
-          // Close the modal after successful login
-          closeModal();
+      // Call your API endpoint for sign-in
+      const response = await axios.post('http://192.168.1.80:5053/api/users/login', {
+        email: email,
+        password: password,
+        rememberme: rememberme 
+      });
+    
+      if (response.status === 200) {
+        const { token, refreshToken } = response.data; // Corrected token access
+
+        if (typeof token !== 'string' || typeof refreshToken !== 'string') {
+          console.error('Token or refresh token is not a string:', token, refreshToken);
+          return;
         }
-      } catch (error) {
-        console.error("An error occurred during the login process", error);
+      
+        // Store tokens in local storage
+        localStorage.setItem('userJWTToken', token);
+        localStorage.setItem('refreshToken', refreshToken);
+        try {
+          const userInfo = await fetchUserInfo(token);
+          if (userInfo) {
+            await setUserWithLocalStorage(userInfo); // Store user data in localStorage
+          
+          }
+        } catch (error) {
+          console.error("Error fetching user info:", error);
+        }
+    
+        // Close the modal after successful login
+        closeModal();
+        navigate('/dashboard');
       }
+    } catch (error) {
+      console.error("An error occurred during the login process", error);
     }
+  }
 
     return (
         <>

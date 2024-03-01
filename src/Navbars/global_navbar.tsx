@@ -16,12 +16,12 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ openModal, openSignInModal }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+ 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement | null>(null);
   const { user } = useContext(UserContext);
 
-  
+  const userEmail = user?.email;
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -66,37 +66,21 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openSignInModal }) => {
   
       // Clear frontend storage and user context
       localStorage.removeItem('userJWTToken');
-      setUserEmail(null)
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('email');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('roles');
+      localStorage.removeItem('userFullName');
+ 
   
-      navigate('/', { replace: true }); // Redirect to home or login page
+      navigate('/', { replace: true }); // Redirect to home 
       window.location.reload();
     } catch (error) {
       console.error('Error during logout:', error);
     }
   };
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const token = localStorage.getItem('userJWTToken');
-      if (token) {
-        const decoded = jwtDecode<CustomJwtPayload>(token);
-        setUserEmail(decoded.email);
-      } else {
-        setUserEmail(null);
-      }
-    };
-  
-    // Subscribe to storage events
-    window.addEventListener('storage', handleStorageChange);
-  
-    // Fetch the initial email
-    handleStorageChange();
-  
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+
 
   return (
     <nav className="navbar">

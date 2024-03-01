@@ -26,6 +26,10 @@ import CreateProfile from './Profiles/CreateProfile';
 import RoleCheck from './Authentication/RoleBasedRoute';
 import { DiagnosticCategory } from 'typescript';
 import { fetchUserInfo } from './SignUpSignIn/fetchUserInfo';
+import TokenRefreshComponent from './Authentication/TokenRefreshComponent';
+import ArtistProfile from './Profiles/ArtistProfiles/ArtistProfile';
+import CreateArtistProfile from './Profiles/ArtistProfiles/CreateArtistProfile';
+import ArtistBanner from './Profiles/ArtistBanner';
 interface AuthCallbackProps {
   setUser: Dispatch<SetStateAction<User>>;
 }
@@ -37,6 +41,8 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(true);
+
   const openModal = () => {
     setIsModalOpen(true);
     setIsModalSignInOpen(true);
@@ -46,13 +52,15 @@ function App() {
     setIsModalSignInOpen(false);
   };
 
-  
-  useEffect(() => {
-    const token = localStorage.getItem('userJWTToken');
-    if (token) {
-      fetchUserInfo(token);
-    }
-  }, []);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem('userJWTToken');
+  //   if (token) {
+  //     fetchUserInfo(token);
+  //   }
+  // }, []);
+
+
 
 
 
@@ -72,65 +80,92 @@ function App() {
     setIsModalSignInOpen(true);
   };
 
-  
- 
+
+
   const handleForgotPasswordClick = () => {
     setModalContent("signIn");
   };
   { isModalOpen && <SignUp isModal={isModalOpen} closeModal={closeModal} /> }
 
 
- 
+
 
 
 
   return (
     <>
+      <TokenRefreshComponent />
+      <header>
+        <Navbar
+          openModal={() => setIsModalOpen(true)}
+          openSignInModal={() => setIsModalSignInOpen(true)}
+        />
+        {isModalOpen && <SignUp isModal={isModalOpen} closeModal={closeModal} />}
+        {isModalSignInOpen && (
+          modalContent === "signIn" ? (
+            <SignIn
+              isModal={isModalSignInOpen}
+              closeModal={closeModal}
+              changeModalContent={setModalContent}
+            />
+          ) : modalContent === "passwordReset" ? (
+            <PasswordResetRequestForm
+              isModal={isModalSignInOpen}
+              closeModal={closeModal}
+              changeModalContent={setModalContent}
+            />
+          ) : null
+        )}
+      </header>
 
-        <header>
-          <Navbar
-            openModal={() => setIsModalOpen(true)}
-            openSignInModal={() => setIsModalSignInOpen(true)}
-          />
-          {isModalOpen && <SignUp isModal={isModalOpen} closeModal={closeModal} />}
-          {isModalSignInOpen && (
-            modalContent === "signIn" ? (
-              <SignIn
-                isModal={isModalSignInOpen}
-                closeModal={closeModal}
-                changeModalContent={setModalContent}
-              />
-            ) : modalContent === "passwordReset" ? (
-              <PasswordResetRequestForm
-                isModal={isModalSignInOpen}
-                closeModal={closeModal}
-                changeModalContent={setModalContent}
-              />
-            ) : null
-          )}
-        </header>
-  
-        {user && !user.isAuthorized && <h1>Welcome to Alive!</h1>}
-  
-        <Routes>
-          <Route path="/google" element={<GoogleOneTapTest />} />
-          <Route path="/profile/:userId" element={<Profile />} />
-          <Route path="/google-auth" element={<GoogleAuthHandler />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/" element={<PrivateRoute component={Dashboard} />} />
-          <Route path='/create-profile' element={
-            <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
-              <CreateProfile />
-            </RoleCheck>
-          } />
-            <Route path='/dashboard' element={
-    <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
-      <Dashboard />
-    </RoleCheck>
-  } />
-        </Routes>
-   
+      {user && !user.isAuthorized && <h1>Welcome to Alive!</h1>}
+
+      <Routes>
+        <Route path="/google" element={<GoogleOneTapTest />} />
+        <Route path="/profile/:userId" element={<Profile />} />
+        <Route path="/google-auth" element={<GoogleAuthHandler />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/" element={<PrivateRoute component={Dashboard} />} />
+        <Route path='/create-profile' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <CreateProfile />
+          </RoleCheck>
+        } />
+        <Route path='/dashboard' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <Dashboard />
+          </RoleCheck>
+        } />
+            <Route path='/profile' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <Profile />
+          </RoleCheck>
+        } />
+
+<Route path='/artistProfile' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <ArtistProfile />
+          </RoleCheck>
+        } />
+
+        
+<Route path='/create-artistProfile' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <CreateArtistProfile />
+          </RoleCheck>
+        } />
+
+<Route path='/artistBanner' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <ArtistBanner />
+          </RoleCheck>
+        } />
+
+
+
+      </Routes>
+
     </>
   );
 

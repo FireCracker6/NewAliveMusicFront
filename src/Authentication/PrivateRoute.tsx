@@ -7,15 +7,19 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ component: Component }) => {
+  const [isAuth, setIsAuth] = useState(isAuthenticated());
+  const location = useLocation();
 
-  const [isAuth, setIsAuth] = useState(false);
+  // useEffect(() => {
+  //   // This will run whenever the user's authentication status changes
+  //   const interval = setInterval(() => {
+  //     setIsAuth(isAuthenticated());
+  //   }, 1000); // Check every second
 
-  useEffect(() => {
-    setIsAuth(isAuthenticated());
-  }, []);
+  //   // Clean up the interval on unmount
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  console.log("isAuthenticated:", isAuth);
-  
   // if (!isAuth) {
   //   // Redirect unauthenticated users to the login page
   //   return <Navigate to="/" state={{ from: location }} replace />;

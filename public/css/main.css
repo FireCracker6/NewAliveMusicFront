@@ -17,6 +17,50 @@ body {
   background-color: #272727;
 }
 
+.profile-form-button {
+  justify-self: center;
+  -ms-flex-item-align: center;
+      align-self: center;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 18px;
+  background-color: #9ea0aa;
+  border: none !important;
+  border-radius: 5px;
+  cursor: pointer;
+  -webkit-transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease;
+}
+.profile-form-button:hover {
+  background-color: #72747d;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.upload-form-button {
+  justify-self: center;
+  -ms-flex-item-align: center;
+      align-self: center;
+  width: 250px;
+  margin-top: 10px;
+  margin-right: 20px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #317b3d;
+  border: 2px solid #748176;
+  border-radius: 2px;
+  cursor: pointer;
+  -webkit-transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease;
+}
+.upload-form-button:hover {
+  background-color: #113f18;
+  color: #7c9980;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
 .navbar {
   background-color: #8c1616;
   padding: 10px 0;
@@ -592,6 +636,126 @@ span.buttonText {
           align-items: center;
 }
 .create-profile-grid .preview img {
+  max-width: 250px;
+}
+
+.create-artist-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas: "form-container" "preview";
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .create-artist-profile-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas: "form-container preview";
+  }
+}
+.create-artist-profile-grid .form-container {
+  grid-area: form-container;
+}
+.create-artist-profile-grid .form {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas: "artistName" "description" "genre" "bannerPic" "button";
+}
+.create-artist-profile-grid .form input,
+.create-artist-profile-grid .form textArea,
+.create-artist-profile-grid .form button {
+  padding: 5px;
+  width: 100%;
+}
+.create-artist-profile-grid label {
+  display: block;
+}
+.create-artist-profile-grid .artistName {
+  grid-area: artistName;
+}
+.create-artist-profile-grid .description {
+  grid-area: description;
+}
+.create-artist-profile-grid .genre {
+  grid-area: genre;
+}
+.create-artist-profile-grid .bannerPic {
+  grid-area: bannerPic;
+  border: 1px solid white;
+  position: relative !important;
+}
+.create-artist-profile-grid .bannerPic .editor-container {
+  max-width: 1200px;
+  overflow: auto;
+}
+.create-artist-profile-grid .bannerPic .artistPic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+.create-artist-profile-grid .button {
+  grid-area: button;
+}
+
+.labels-right {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  margin-top: 20px;
+}
+.labels-right label {
+  margin-right: 10px;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  -webkit-transition: opacity 0.2s;
+  transition: opacity 0.2s;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+input[type=range]::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.preview {
+  grid-area: preview;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.preview img {
   max-width: 250px;
 }
 

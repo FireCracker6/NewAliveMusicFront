@@ -51,21 +51,24 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate(); 
 
   const setUserWithLocalStorage: Dispatch<SetStateAction<User | null>> = (user: any) => {
-    console.log("setUserWithLocalStorage called with user:", user);
-    if (user) {
-      console.log("Setting userToken in localStorage with value:", user.token);
-      localStorage.setItem('userJWTToken', user.token || '');
-    
-      localStorage.setItem('userEmail', user.email || '');
-      localStorage.setItem('email', user.email || '');
-      localStorage.setItem('roles', JSON.stringify(user.roles) || ''); // Store roles in localStorage
-      localStorage.setItem('userFullName', user.fullName || '');
-    } else {
-      localStorage.removeItem('userToken');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('userFullName');
-      localStorage.removeItem('roles'); // Remove roles from localStorage
-    }
+    return new Promise<void>((resolve) => {
+      console.log("setUserWithLocalStorage called with user:", user);
+      if (user) {
+        console.log("Setting userToken in localStorage with value:", user.token);
+        localStorage.setItem('userJWTToken', user.token || '');
+      
+        localStorage.setItem('userEmail', user.email || '');
+        localStorage.setItem('email', user.email || '');
+        localStorage.setItem('roles', JSON.stringify(user.roles) || ''); // Store roles in localStorage
+        localStorage.setItem('userFullName', user.fullName || '');
+      } else {
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userFullName');
+        localStorage.removeItem('roles'); // Remove roles from localStorage
+      }
+      resolve();
+    });
   };
 const setUserSafely = (newUser: any) => {
   if (!user || (newUser && user.email !== newUser.email)) {
