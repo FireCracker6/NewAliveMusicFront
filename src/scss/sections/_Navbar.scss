@@ -103,6 +103,7 @@ font-size: 54px;
     }
 
     a {
+       
         text-decoration: none;
         color: #b4bccd;
         padding: 5px 10px;
@@ -127,9 +128,17 @@ font-size: 54px;
 
 .right {
     order: 1;
+   
+    
 
     @media (min-width: 768px) {
         order: 2;
+       a {
+        margin-left: -10px;
+       }
+        img {
+            margin-right: -10px;
+        }
     }
 
     li {

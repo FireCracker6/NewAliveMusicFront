@@ -8,6 +8,7 @@ interface DecodedToken {
 const isTokenValid = (token: string): boolean => {
   try {
     const decodedToken = jwtDecode<DecodedToken>(token);
+    console.log('decodedToken', decodedToken);
     const currentTime = Date.now() / 1000;
     return decodedToken.exp > currentTime;
   } catch (error) {
@@ -18,5 +19,6 @@ const isTokenValid = (token: string): boolean => {
 
 export const isAuthenticated = (): boolean => {
   const token = localStorage.getItem('userJWTToken');
+  console.log('token from isAuthenticated', token);
   return !!token && isTokenValid(token);
 };

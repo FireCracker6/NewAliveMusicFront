@@ -62,10 +62,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('roles', JSON.stringify(user.roles) || ''); // Store roles in localStorage
         localStorage.setItem('userFullName', user.fullName || '');
       } else {
-        localStorage.removeItem('userToken');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('userFullName');
-        localStorage.removeItem('roles'); // Remove roles from localStorage
+     //   localStorage.removeItem('userToken');
+       // localStorage.removeItem('userEmail');
+        //localStorage.removeItem('userFullName');
+        //localStorage.removeItem('roles'); // Remove roles from localStorage
       }
       resolve();
     });

@@ -1,0 +1,36 @@
+.artist-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background-color: #1e2525;
+    height: 100vh;
+}
+
+.artist-banner {
+    width: 100%;
+    height: 200px; // adjust this to control the height of the banner
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; // this will ensure the image covers the entire banner without distorting
+    }
+}
+
+.artist-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+   
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+
+    p {
+        margin-bottom: 10px;
+    }
+}

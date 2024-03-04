@@ -131,3 +131,28 @@
         max-width: 250px;
     }
 }
+.artist-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.profile-image-small {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #654d4d;
+    filter: sepia(80%) saturate(50%) hue-rotate(300deg) drop-shadow(1px 1px 1px #774141);
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+    border-radius: 40%;
+  
+    img {
+        object-fit: cover;
+        width: 100%;
+        border-radius: 20%;
+    }
+
+    &.fade {
+        opacity: 0;
+    }
+}

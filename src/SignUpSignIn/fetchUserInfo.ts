@@ -21,6 +21,8 @@ export const fetchUserInfo = async (token: string): Promise<User | null> => {
         token: token, // Include the token in the user object
       };
 
+      
+
       return newUserData;
     }
   } catch (error) {

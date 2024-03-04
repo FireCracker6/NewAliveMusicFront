@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { CustomJwtPayload } from '../SignUpSignIn/AuthCallBack';
 import UserContext from '../Contexts/UserContext';
-
+import { fetchUserInfo } from "../SignUpSignIn/fetchUserInfo";
+import { User } from "../SignUpSignIn/types";
 
 interface NavbarProps {
   openModal: () => void;
@@ -19,10 +20,42 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openSignInModal }) => {
  
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement | null>(null);
-  const { user } = useContext(UserContext);
-
+ // const { user } = useContext(UserContext);
+  const { setUserWithLocalStorage } = useContext(UserContext);
+  const [user, setUser] = useState<User | null>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
   const userEmail = user?.email;
   const navigate = useNavigate();
+
+
+
+
+
+// ...
+
+useEffect(() => {
+    const token = localStorage.getItem('userJWTToken');
+    console.log(token)
+    if (token) {
+        fetchUserInfo(token).then(async fetchedUser => {
+            if (fetchedUser) {
+                // Decode the token to get the userId
+                const decodedToken: any = jwtDecode(token);
+                const userId = decodedToken.nameid;
+
+                // Fetch user profile
+                const profileResponse = await fetch(`http://192.168.1.80:5053/api/Profile/${userId}`);
+                if (profileResponse.ok) {
+                    const profileData = await profileResponse.json();
+                    fetchedUser.profilePicturePath = profileData.profilePicturePath;
+                } else {
+                    console.error('Failed to fetch user profile:', profileResponse.status);
+                }
+                setUser(fetchedUser);
+            }
+        });
+    }
+}, []);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -81,6 +114,15 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openSignInModal }) => {
   };
 
 
+  useEffect(() => {
+    if (imageRef.current) {
+        imageRef.current.classList.add('fade');
+
+        setTimeout(() => {
+            imageRef?.current?.classList.remove('fade');
+        }, 50); // Adjust this delay as needed
+    }
+}, []);
 
   return (
     <nav className="navbar">
@@ -96,6 +138,15 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openSignInModal }) => {
             <li><a href="#">Our Vision</a></li>
           </ul>
           <ul className="menu-group right">
+          {user?.profilePicturePath ? (
+   <div className="profile-image-small" ref={imageRef}>
+   <img src={user?.profilePicturePath} alt="Profile" />
+</div>
+) : (
+  <div>
+    <img src="https://via.placeholder.com/150" alt="Profile" />
+  </div>
+)}
           {user?.email ? (
             <li ref={dropdownRef}>
               <a href="#" onClick={toggleDropdown}>

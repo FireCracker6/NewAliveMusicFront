@@ -27,9 +27,12 @@ import RoleCheck from './Authentication/RoleBasedRoute';
 import { DiagnosticCategory } from 'typescript';
 import { fetchUserInfo } from './SignUpSignIn/fetchUserInfo';
 import TokenRefreshComponent from './Authentication/TokenRefreshComponent';
-import ArtistProfile from './Profiles/ArtistProfiles/ArtistProfile';
-import CreateArtistProfile from './Profiles/ArtistProfiles/CreateArtistProfile';
+
 import ArtistBanner from './Profiles/ArtistBanner';
+import CreateBannerLogo from './Profiles/ArtistProfiles/CreateBannerLogo';
+import CreateArtistProfile from './Profiles/ArtistProfiles/CreateArtistProfile';
+import ArtistProfile from './Profiles/ArtistProfiles/ArtistProfile';
+import UploadTrackForm from './Artists/UploadTrackForm';
 interface AuthCallbackProps {
   setUser: Dispatch<SetStateAction<User>>;
 }
@@ -145,14 +148,14 @@ function App() {
 
 <Route path='/artistProfile' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
-            <ArtistProfile />
+            <CreateArtistProfile />
           </RoleCheck>
         } />
 
         
 <Route path='/create-artistProfile' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
-            <CreateArtistProfile />
+            <CreateBannerLogo />
           </RoleCheck>
         } />
 
@@ -161,6 +164,20 @@ function App() {
             <ArtistBanner />
           </RoleCheck>
         } />
+
+<Route path='/getartistprofile/:artistId' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <ArtistProfile />
+          </RoleCheck>
+        } />
+
+<Route path='/uploadTrack' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <UploadTrackForm />
+          </RoleCheck>
+        } />
+
+
 
 
 

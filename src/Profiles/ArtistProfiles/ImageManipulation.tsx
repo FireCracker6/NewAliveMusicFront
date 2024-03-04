@@ -67,10 +67,11 @@ const ImageManipulation: React.FC<ImageManipulationProps> = ({
   let canvas: p5.Renderer;
 
   const colorPalette = [
+    [128, 128, 128], // Add grayscale color
     [255, 255, 255],
     [0, 0, 0],
     [255, 0, 0]
-  ]
+];
 
   const backgroundColorRef = useRef(backgroundColor);
 
@@ -155,33 +156,63 @@ const ImageManipulation: React.FC<ImageManipulationProps> = ({
       let currentBannerFilter: number;
       let currentLogoFilter: number;
 
+      // p.setup = () => {
+
+      //   currentBannerFilter = bannerFilterRef.current;
+      //   currentLogoFilter = logoFilterRef.current;
+      //   filterTypes = ["threshold", "gray", "opaque", "invert", "posterize", "erode", "dilate", "blur"];
+      //   const width = sketchRef.current ? sketchRef.current.clientWidth : p.windowWidth;
+      //   const parentElement = sketchRef.current || undefined;
+      //   p.createCanvas(width, 400).parent(parentElement ?? '');
+      //   setP5Instance(p)
+      //   p.background(200);
+
+      //   if (bannerImg) {
+      //     bannerImg.loadPixels();
+      //     bannerGraphics = p.createGraphics(bannerImg.width, bannerImg.height);
+      //     bannerGraphics.image(bannerImg, 0, 0);
+      //     // bannerGraphics.filter(filterTypes[bannerFilterRef.current]);
+      //   }
+
+      //   if (logoImg) {
+      //     logoImg.loadPixels();
+      //     logoGraphics = p.createGraphics(logoImg.width, logoImg.height);
+      //     logoGraphics.image(logoImg, 0, 0);
+      //     //  logoGraphics.filter(filterTypes[logoFilterRef.current]);
+      //   }
+      //   canvas = p.createCanvas(width, 400).parent(parentElement ?? '');
+      //   p.textSize(32);
+      //   p.textAlign(p.CENTER, p.CENTER);
+      //   p.text('Upload your images here...', p.width / 2, p.height / 2);
+      // };
       p.setup = () => {
-       
         currentBannerFilter = bannerFilterRef.current;
         currentLogoFilter = logoFilterRef.current;
         filterTypes = ["threshold", "gray", "opaque", "invert", "posterize", "erode", "dilate", "blur"];
         const width = sketchRef.current ? sketchRef.current.clientWidth : p.windowWidth;
         const parentElement = sketchRef.current || undefined;
-        p.createCanvas(width, 400).parent(parentElement ?? '');
+        canvas = p.createCanvas(width, 400).parent(parentElement ?? '');
         setP5Instance(p)
         p.background(200);
-
+    
         if (bannerImg) {
           bannerImg.loadPixels();
           bannerGraphics = p.createGraphics(bannerImg.width, bannerImg.height);
           bannerGraphics.image(bannerImg, 0, 0);
           // bannerGraphics.filter(filterTypes[bannerFilterRef.current]);
         }
-
+    
         if (logoImg) {
           logoImg.loadPixels();
           logoGraphics = p.createGraphics(logoImg.width, logoImg.height);
           logoGraphics.image(logoImg, 0, 0);
           //  logoGraphics.filter(filterTypes[logoFilterRef.current]);
         }
-        canvas = p.createCanvas(width, 400).parent(parentElement ?? '');
-      };
-
+    
+        p.textSize(32);
+        p.textAlign(p.CENTER, p.CENTER);
+        p.text('Upload your images here...', p.width / 2, p.height / 2);
+    };
 
 
       p.draw = () => {
@@ -189,6 +220,13 @@ const ImageManipulation: React.FC<ImageManipulationProps> = ({
 
         const bgColor = colorPalette[backgroundColorRef.current];
         p.background(bgColor[0], bgColor[1], bgColor[2]);
+    
+        if (!bannerImg && !logoImg) {
+            p.fill(0); // Set text color to black
+            p.textSize(32);
+            p.textAlign(p.CENTER, p.CENTER);
+            p.text('Upload your images here...', p.width / 2, p.height / 2);
+        }
 
         if (bannerGraphics && bannerFilterRef.current !== currentBannerFilter) {
           if (bannerImg) {
