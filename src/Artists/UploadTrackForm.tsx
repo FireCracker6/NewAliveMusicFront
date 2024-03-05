@@ -55,9 +55,11 @@ function UploadTrackForm() {
 
             // Extract trackID from the response
             const trackId = response.data.trackID;
+            const jobId = response.data.jobId;
             const trackResponse = await axios.get(`http://192.168.1.80:5053/api/Track/${trackId}`);
             setTrackUrl(trackResponse.data.trackFilePath);
             console.log(trackResponse.data.trackFilePath); // This should now log the correct URL
+            fetchTrackInfo(jobId);
 
 
 
@@ -66,6 +68,57 @@ function UploadTrackForm() {
         }
     };
 
+    // async function fetchTrackInfo(trackId: any) {
+    //     // Make a request to your backend API to get the jobId for the track
+    //     const response = await fetch(`http://192.168.1.80:5053/api/Track/${trackId}`);
+    //     const track = await response.json();
+    //     const jobId = track.jobId;
+    
+    //     // Make a request to your backend API to get the track info from the Music AI API
+    //     const musicAiResponse = await fetch(`https://api.music.ai/api/job/${jobId}`);
+    //     const trackInfo = await musicAiResponse.json();
+    
+    //     // Use the track info in your app
+    //     console.log(trackInfo);
+    // }
+    async function fetchTrackInfo(jobId: any) {
+        // Define your API key
+        const apiKey = '2555cad4-34a6-427a-a2e8-965f848f69fc';
+    
+        let trackInfo;
+        while (true) {
+            // Make a request to your backend API to get the track info from the Music AI API
+            const musicAiResponse = await fetch(`https://api.music.ai/api/job/${jobId}`, {
+                headers: {
+                    'Authorization': apiKey
+                }
+            });
+            trackInfo = await musicAiResponse.json();
+    
+            // If the job is complete, break the loop
+            if (trackInfo.status !== 'STARTED') {
+                break;
+            }
+    
+            // Wait for a bit before polling again
+            await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+    
+        // Fetch the result from the URL in the response
+        if (trackInfo.result && trackInfo.result['Output 1']) {
+            const resultResponse = await fetch(trackInfo.result['Output 1']);
+            if (!resultResponse.ok) {
+                console.error(`Error fetching data: ${resultResponse.status} ${resultResponse.statusText}`);
+            } else {
+                const resultData = await resultResponse.json();
+                console.log(resultData);
+            }
+            // Use the result data in your app
+        
+        } else {
+            console.log('No result data found');
+        }
+    }
     return (
         <>
             <div className="container d-flex justify-content-center py-4">

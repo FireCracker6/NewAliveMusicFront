@@ -33,6 +33,7 @@ import CreateBannerLogo from './Profiles/ArtistProfiles/CreateBannerLogo';
 import CreateArtistProfile from './Profiles/ArtistProfiles/CreateArtistProfile';
 import ArtistProfile from './Profiles/ArtistProfiles/ArtistProfile';
 import UploadTrackForm from './Artists/UploadTrackForm';
+import JobInfo from './Artists/JobInfo';
 interface AuthCallbackProps {
   setUser: Dispatch<SetStateAction<User>>;
 }
@@ -174,6 +175,13 @@ function App() {
 <Route path='/uploadTrack' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <UploadTrackForm />
+          </RoleCheck>
+        } />
+
+
+<Route path='/jobinfo' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <JobInfo jobId='1f2e9f06-519c-42c9-b786-a376ce959421' apiKey='2555cad4-34a6-427a-a2e8-965f848f69fc' />
           </RoleCheck>
         } />
 
