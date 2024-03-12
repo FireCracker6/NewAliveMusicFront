@@ -12,7 +12,8 @@ import { fetchUserInfo } from './fetchUserInfo';
 import PasswordResetRequestForm from './PasswordResetRequestForm';
 import { CustomJwtPayload } from './AuthCallBack';
 import Modal from 'react-modal';
-
+import { useDispatch } from "react-redux";
+import { logIn } from "../Redux/Reducers/sessionReducer";
 
 interface SignInProps {
     isModal: boolean;
@@ -65,6 +66,10 @@ const SignIn: React.FC<SignInProps> = ({ isModal, closeModal, changeModalContent
     const [modalContent, setModalContent] = useState("passwordReset"); // "signIn" or "passwordReset"
     const openModal = () => setIsModalOpen(true);
     const { setUserWithLocalStorage } = useContext(UserContext);
+
+
+    const dispatch = useDispatch();
+
     if (!userContext) {
       throw new Error('SignIn must be used within UserProvider');
     }
@@ -168,7 +173,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       });
     
       if (response.status === 200) {
-        const { token, refreshToken } = response.data; // Corrected token access
+        const { token, refreshToken, userId } = response.data; // Corrected token access
 
         if (typeof token !== 'string' || typeof refreshToken !== 'string') {
           console.error('Token or refresh token is not a string:', token, refreshToken);
@@ -182,7 +187,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           const userInfo = await fetchUserInfo(token);
           if (userInfo) {
             await setUserWithLocalStorage(userInfo); // Store user data in localStorage
-          
+            console.log('userInfo:', userInfo);
+            console.log('user id from logn', userInfo.userId)
+            dispatch(logIn({ userId: userId }));
+         // Dispatch logIn action
           }
         } catch (error) {
           console.error("Error fetching user info:", error);
@@ -190,6 +198,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     
         // Close the modal after successful login
         closeModal();
+        
         navigate('/dashboard');
       }
     } catch (error) {

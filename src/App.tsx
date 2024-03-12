@@ -34,6 +34,7 @@ import CreateArtistProfile from './Profiles/ArtistProfiles/CreateArtistProfile';
 import ArtistProfile from './Profiles/ArtistProfiles/ArtistProfile';
 import UploadTrackForm from './Artists/UploadTrackForm';
 import JobInfo from './Artists/JobInfo';
+import TracksList from './Artists/TrackList';
 interface AuthCallbackProps {
   setUser: Dispatch<SetStateAction<User>>;
 }
@@ -181,7 +182,13 @@ function App() {
 
 <Route path='/jobinfo' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
-            <JobInfo jobId='1f2e9f06-519c-42c9-b786-a376ce959421' apiKey='2555cad4-34a6-427a-a2e8-965f848f69fc' />
+            <JobInfo jobId='3da13b83-de45-4838-a44d-f5f0d2bfa284' apiKey='2555cad4-34a6-427a-a2e8-965f848f69fc' />
+          </RoleCheck>
+        } />
+
+<Route path='/tracklist' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <TracksList />
           </RoleCheck>
         } />
 

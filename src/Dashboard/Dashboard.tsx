@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 import { Link } from "react-router-dom";
 import { fetchUserInfo } from "../SignUpSignIn/fetchUserInfo";
 import { User } from "../SignUpSignIn/types";
+
 
 const Dashboard: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -10,9 +11,10 @@ const Dashboard: React.FC = () => {
     const token = localStorage.getItem('userJWTToken');
     console.log(token)
     if (token) {
-      fetchUserInfo(token).then(fetchedUser => {
+      fetchUserInfo(token).then((fetchedUser: SetStateAction<User | null>) => {
         if (fetchedUser) {
           setUser(fetchedUser);
+          
         }
       });
     }

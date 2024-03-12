@@ -68,19 +68,7 @@ function UploadTrackForm() {
         }
     };
 
-    // async function fetchTrackInfo(trackId: any) {
-    //     // Make a request to your backend API to get the jobId for the track
-    //     const response = await fetch(`http://192.168.1.80:5053/api/Track/${trackId}`);
-    //     const track = await response.json();
-    //     const jobId = track.jobId;
-    
-    //     // Make a request to your backend API to get the track info from the Music AI API
-    //     const musicAiResponse = await fetch(`https://api.music.ai/api/job/${jobId}`);
-    //     const trackInfo = await musicAiResponse.json();
-    
-    //     // Use the track info in your app
-    //     console.log(trackInfo);
-    // }
+
     async function fetchTrackInfo(jobId: any) {
         // Define your API key
         const apiKey = '2555cad4-34a6-427a-a2e8-965f848f69fc';

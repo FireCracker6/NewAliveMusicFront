@@ -3,17 +3,20 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { User } from '../SignUpSignIn/types';
 import { useLocation, useNavigate } from 'react-router-dom';
+
 interface UserContextType {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
   loading: boolean;
   setUserWithLocalStorage: (user: User | null) => void; // Add this line
+ 
 }
 const defaultState = {
   user: null,
   setUser: () => {},
 };
 interface CustomJwtPayload {
+  nameId: string;
   name: string;
   email: string;
   roles: string[];
@@ -34,9 +37,11 @@ const UserContext = createContext<UserContextType>(defaultUserContext);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('userJWTToken');
+   
     if (storedUser) {
       const decoded = jwtDecode<CustomJwtPayload>(storedUser);
       return {
+        userId: decoded.nameId,
         fullName: decoded.name,
         email: decoded.email,
         roles: decoded.roles as string[],
@@ -52,6 +57,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const setUserWithLocalStorage: Dispatch<SetStateAction<User | null>> = (user: any) => {
     return new Promise<void>((resolve) => {
+     
       console.log("setUserWithLocalStorage called with user:", user);
       if (user) {
         console.log("Setting userToken in localStorage with value:", user.token);
@@ -61,6 +67,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('email', user.email || '');
         localStorage.setItem('roles', JSON.stringify(user.roles) || ''); // Store roles in localStorage
         localStorage.setItem('userFullName', user.fullName || '');
+        
       } else {
      //   localStorage.removeItem('userToken');
        // localStorage.removeItem('userEmail');

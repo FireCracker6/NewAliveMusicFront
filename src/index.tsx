@@ -6,6 +6,14 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Modal from 'react-modal';
 import { UserProvider } from './Contexts/UserContext';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import rootReducer from './Redux/store';
+import store from './Redux/store';
+
+// Create a Redux store with the rootReducer
+
+
 
 // Setting the app element for react-modal
 Modal.setAppElement('#root');
@@ -16,9 +24,11 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <BrowserRouter>
+   <Provider store={store}>
      <UserProvider>
     <App />
     </UserProvider>
+    </Provider>
   </BrowserRouter>
 );
 
@@ -26,3 +36,4 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+

@@ -1,0 +1,133 @@
+.artisttrack-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background-color: #1e2525;
+    
+}
+
+.artisttrack-banner {
+    width: 100%;
+    height: 200px; // adjust this to control the height of the banner
+//position: sticky;
+//top: 0;
+//z-index: 100;
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; // this will ensure the image covers the entire banner without distorting
+    }
+}
+.artisttrack-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+    padding: 20px 0;
+    background-color: #1e2525;
+    color: #8eb0b0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+}
+.artisttracks-header {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+  background-color: transparent;
+    margin: 20px 0;
+   // border: 1px solid white;
+
+}
+.artisttracks {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+  background-color: #1e2525;
+    margin: 20px 0;
+   // border: 1px solid white;
+
+   h3 {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    font-size: 1.5em;
+    margin-bottom: -25px;
+   
+   
+   }
+
+}
+.pause-play-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 30px;
+    background-color: #1e2525;
+    margin-top: -10px;
+    margin: 20px 0;
+    margin-bottom: 5px;
+    //border: 1px solid white;
+    button {
+        width: 100%;
+        height: 30px;
+        background-color: #475858;
+        border: none;
+      
+        cursor: pointer;
+        outline: none;
+        transition: all 0.3s ease;
+        &:hover {
+            transform: scale(1.1);
+            margin-right: 50px;
+            margin-left: 50px;
+            background-color: #5f7676;
+        }
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+}
+
+.progress-bar {
+    width: 100%;
+     height: 20px;
+     background-color:#b9cccc;
+     margin-bottom: 5px;
+    }
+.input-bar {
+    display: flex;
+    width: 100%;
+    background-color: #03376e;
+    input {
+        border-radius: 5px;
+    }
+}
+
+.artisttrack-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+   
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+
+    p {
+        margin-bottom: 10px;
+    }
+}
