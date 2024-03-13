@@ -5,6 +5,7 @@ import http from 'http';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import WebSocket from 'ws';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const app = express();
 app.use(cors()); // Enable CORS
@@ -13,6 +14,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`Received request: ${req.method} ${req.url}`);
   next();
 });
+
+app.use('/api', createProxyMiddleware({ 
+  target: 'http://192.168.1.80:5053', 
+  changeOrigin: true 
+}));
 
 app.use(bodyParser.json({ limit: '100mb' }));
 

@@ -162,7 +162,7 @@ useEffect(() => {
               </a>
               {isDropdownOpen && (
                 <div className="dropdown-menu">
-                  <a href="#">Profile</a>
+                  <a href="/update-profile">Profile</a>
                   <a href="#">Account</a>
                   <a href="#" onClick={handleLogout}>Logout</a>
                 </div>

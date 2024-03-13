@@ -35,6 +35,7 @@ import ArtistProfile from './Profiles/ArtistProfiles/ArtistProfile';
 import UploadTrackForm from './Artists/UploadTrackForm';
 import JobInfo from './Artists/JobInfo';
 import TracksList from './Artists/TrackList';
+import UpdateProfile from './Profiles/UpdateUserProfile';
 interface AuthCallbackProps {
   setUser: Dispatch<SetStateAction<User>>;
 }
@@ -132,11 +133,20 @@ function App() {
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<PrivateRoute component={Dashboard} />} />
+
+
         <Route path='/create-profile' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <CreateProfile />
           </RoleCheck>
         } />
+
+        <Route path='/update-profile' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <UpdateProfile />
+          </RoleCheck>
+        } />
+
         <Route path='/dashboard' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <Dashboard />

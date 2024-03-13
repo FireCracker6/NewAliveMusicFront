@@ -107,6 +107,7 @@ socket.onmessage = (event) => {
       if (response.data[0]) {
         setArtistName(response.data[0].artist.artistName);
         setArtistPicturePath(response.data[0].artist.artistPicturePath);
+        console.log('artist picture path:', response.data[0].artist.artistPicturePath);
       }
     };
 
