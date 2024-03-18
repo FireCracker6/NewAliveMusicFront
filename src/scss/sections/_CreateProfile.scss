@@ -2,33 +2,54 @@
   .create-profile-grid {
     display: grid;
     grid-template-columns: 1fr;
+   justify-content: center;
+   width: 100%;
     grid-template-areas: 
+    'edit'
       'form-container'
       'preview';
   
     @media (min-width: 768px) {
       grid-template-columns: 1fr 1fr;
       grid-template-areas: 
+        'edit preview' 
         'form-container preview';
     }
   
     .form-container {
       grid-area: form-container;
+    //  border: 1px solid white;
+      display: flex;
+      justify-content: left;
+      width: 100%;
+      margin: 0;
   
       .form {
         display: grid;
+        justify-content: center;
+     //  border: 1px solid black;
+        @media(min-width: 768px) {
+          justify-content: left;
+          width: 95%;
+        }
         grid-template-columns: 1fr;
         grid-template-areas: 
+      
           'fullname'
           'bio'
           'location'
           'websiteURL'
           'profilePic'
           'button';
-  
+  input, textArea, .profile-pic {
+    width: 100%;
+  }
+
+
         label {
           display: block;
         }
+      
   
         .fullname {
           grid-area: fullname;
@@ -44,6 +65,41 @@
         }
         .profilePic {
           grid-area: profilePic;
+  
+          .file-input {
+            display: none; // hide the actual input
+          }
+        
+          .upload-button {
+            display: grid;
+            justify-content: center;
+            width: 100%;
+            background-color: #958b8b;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            
+          
+        
+            &:hover {
+              background-color: lighten(#958b8b, 20%);
+            }
+          }
+          .profile-canvas {
+            display: grid;
+            justify-content: center;
+            width: 100%;
+
+        
+         
+            input, button {
+              width: 100%;
+            }
+          }
         }
         .button {
           grid-area: button;
@@ -56,9 +112,41 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      text-align: left;
+   //   border: 1px solid black;
+  
+   .preview-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    align-items: flex-start;
+    text-align: left;
+   // border: 1px solid white;
+    padding-left: 40px;
+    text-wrap: none;
+    @media(min-width: 768px) {
 
-      img {
-        max-width: 250px;
+      background-color: #353030;
+     // max-width: 250px;
+      padding-left: 0;
+    }
+  
+   }
+      .profile-prev-image {
+        display: flex;
+        width: 100%;
+      @media(min-width: 768px) {
+        border-bottom: 1px solid #928080;
+        background-color: #313131;
       }
+        justify-content: center;
+        img {
+          width: 100%;
+          object-fit: cover;
+        }
+      
+      }
+
+     
     }
   }

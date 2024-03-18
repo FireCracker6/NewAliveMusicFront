@@ -4,13 +4,16 @@ import Track from './Track';
 import { app, db, realtimeDb } from '../Firebase/firebaseConfig';
 import { addDoc, collection, getDocs, getFirestore, query, serverTimestamp, where } from 'firebase/firestore';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { addLikedTrack, fetchLikesCount, incrementLikesCount, likeTrack, updateLikedTrackIDs, updateLikesCount } from '../Redux/Reducers/likesSlice';
+import { addLikedTrack, fetchLikedTracks, fetchLikesCount, incrementLikesCount, likeTrack, unlikeTrack, updateLikedTrackIDs, updateLikesCount } from '../Redux/Reducers/likesSlice';
 import { AppDispatch, RootState } from '../Redux/store';
 import { jwtDecode } from 'jwt-decode';
 import UserContext from '../Contexts/UserContext';
 import { isAuthenticated } from '../Authentication/IsTokenValid';
 
 import { ref, set, update, get, increment, onValue } from "firebase/database";
+import TrackComments from './TrackComments';
+import { addComment } from '../Redux/Reducers/commentsSlice';
+import TrackCommentForm from './TrackCommentForm';
 interface Track {
   artistName: string;
   trackID: number;
@@ -38,83 +41,84 @@ const TracksList: React.FC = () => {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [artistName, setArtistName] = useState<string | null>(null);
   const [artistPicturePath, setArtistPicturePath] = useState<string | null>(null);
-  // const [likedTracks, setLikedTracks] = useState<number[]>([]);
+
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const { user } = useContext(UserContext);
   const dispatch = useDispatch<AppDispatch>();
-  const artistId = 2; // Replace with the actual artist ID
-  const likedTracks = useSelector((state: any) => state.likes.likedTracks);
-  const [likedTrackIDs, setLikedTrackIDs] = useState<number[]>([]);
+  const artistId = 2;
+  const likedTracks = useSelector((state: RootState) => state.likes.likedTracks);
+  const likedTrackIDs = useSelector((state: RootState) => state.likes.likedTrackIDs, shallowEqual);
   const [likesCount, setLikesCount] = useState(0);
+  const [sortedTracks, setSortedTracks] = useState<Track[]>([]);
+  const [isCommentFormVisible, setCommentFormVisible] = useState(false);
+  const [visibleCommentFormTrackId, setVisibleCommentFormTrackId] = useState<Number | null>(null);
   const likesCountState = useSelector((state: any) => {
-    console.log('Redux state', state); // Add this line
+    console.log('Redux state', state);
     return state.likes.likesCountState;
   }, shallowEqual);
-  // const updatedTrackLikesIDs = useSelector((state: RootState) => state.likes.updateLikedTrackIDs);
+
   const [isTrackLiked, setIsTrackLiked] = useState(false);
   const [likedTracksState, setLikedTracksState] = useState<Record<number, boolean>>({});
   const [lastUpdate, setLastUpdate] = useState(Date.now());
   console.log('likesCountState:', likesCountState);
 
-// Inside your component
-useEffect(() => {
-  const socket = new WebSocket('ws://192.168.1.80:3001');
-
-  socket.onopen = (event) => {
-    console.log('WebSocket connection opened', event);
-  };
-
-  socket.onerror = (error) => {
-    console.error('WebSocket error', error);
-  };
-
-// Log WebSocket messages
-socket.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  const { trackId, likesCount } = data;
-
-  // If trackId or likesCount is undefined, try to get them with different keys
-  const trackID = trackId || data.TrackId || data.TrackID;
-  const likes = likesCount || data.LikesCount || data.likesCount;
-  dispatch(incrementLikesCount({ trackID: trackID, count: likes }));
- // console.log('WebSocket message received', data);
-
-  // Log the Redux state
- // console.log('Redux state', state);
-
-  // Only dispatch the updateLikesCount action if the track ID exists in likesCountState
-  if (trackID in likesCountState) {
-    dispatch(updateLikesCount({ trackId: trackID, likesCount: likes }));
-  }
-};
-
-  // Close the WebSocket connection when the component unmounts
-  return () => {
-    socket.close();
-  };
-}, [dispatch]);
-
-
-
+  // Inside your component
   useEffect(() => {
-    setLastUpdate(Date.now());
-  }, [likedTrackIDs]);
+    let socket = new WebSocket('ws://192.168.1.80:3001');
+
+    socket.onopen = (event) => {
+      console.log('WebSocket connection opened', event);
+    };
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error', error);
+    };
+
+    socket.onclose = (event) => {
+      console.log('WebSocket connection closed', event);
+      // Try to reconnect after 5 seconds
+      setTimeout(() => {
+        socket = new WebSocket('ws://192.168.1.80:3001');
+      }, 5000);
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        const { trackId, likesCount } = data;
+
+        const trackID = trackId || data.TrackId || data.TrackID;
+        const likes = likesCount || data.LikesCount || data.likesCount;
+        dispatch(incrementLikesCount({ trackID: trackID, count: likes }));
+
+        if (trackID in likesCountState) {
+          dispatch(updateLikesCount({ trackId: trackID, likesCount: likes }));
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message', error);
+      }
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchTracks = async () => {
       const response = await axios.get(`http://192.168.1.80:5053/api/Track/artist/${artistId}`);
-      setTracks(response.data);
-      if (response.data[0]) {
-        setArtistName(response.data[0].artist.artistName);
-        setArtistPicturePath(response.data[0].artist.artistPicturePath);
-        console.log('artist picture path:', response.data[0].artist.artistPicturePath);
+      setTracks(response.data.$values);
+      if (response.data.$values[0]) {
+        setArtistName(response.data.$values[0].artist.artistName);
+        setArtistPicturePath(response.data.$values[0].artist.artistPicturePath);
+        console.log('artist picture path:', response.data.$values[0].artist.artistPicturePath);
       }
     };
 
     fetchTracks();
   }, []);
 
-  
+
 
 
   useEffect(() => {
@@ -122,100 +126,77 @@ socket.onmessage = (event) => {
     if (isAuthenticated()) {
       const decodedToken: any = jwtDecode(token ?? '');
       setUserId(decodedToken.nameid); // Change this line
-   //   console.log('userid from tracklist', userId)
+      //   console.log('userid from tracklist', userId)
 
     }
   }, [dispatch, user]);
 
 
-  useEffect(() => {
-    const token = localStorage.getItem('userJWTToken');
-    if (isAuthenticated()) {
-      const decodedToken: any = jwtDecode(token ?? '');
-      const userIdFromToken = decodedToken.nameid;
-      setUserId(userIdFromToken);
-   //   console.log('userid from tracklist', userIdFromToken);
-
-  
-    }
-  }, [dispatch, user]);
-
-
-
-  const sortedTracks = tracks.sort((a, b) => {
-    if (a.albumID !== b.albumID) {
-      return (a.albumID ?? 0) - (b.albumID ?? 0);
-    }
-    return a.trackNumber - b.trackNumber;
-  });
-
- 
 
 
   useEffect(() => {
-    const trackRef = ref(realtimeDb, 'tracks/' + sortedTracks);
-    set(trackRef, { likesCount: 0 });
-  }, []);
+    if (!Array.isArray(tracks)) {
+      console.error('tracks is not an array:', tracks);
+      return;
+    }
+
+    const sorted = tracks.sort((a, b) => {
+      if (a.albumID !== b.albumID) {
+        return (a.albumID ?? 0) - (b.albumID ?? 0);
+      }
+      return a.trackNumber - b.trackNumber;
+    });
+
+    setSortedTracks(sorted);
+
+    sorted.forEach(track => {
+      const trackRef = ref(realtimeDb, 'tracks/' + track.trackID);
+      set(trackRef, { likesCount: 0 });
+    });
+  }, [tracks, realtimeDb]);
+
   const trackID = useRef(0);
 
 
   const handleLikeAndIncrement = async (id: number) => {
     const userEmail = localStorage.getItem('email');
-  
+
     if (userId) {
       console.log('trackid', id);
       trackID.current = id; // Update the ref here
-      
-      await dispatch(likeTrack({
-        username: userEmail ?? '',
-        trackID: id,
-        artistName: artistName ?? '',
-        timestamp: new Date().toISOString(),
-        userId: userId,
-        likesCount: (likesCountState[id] ?? 0) + 1
-      }));
-  
-        // Fetch the likes count after a track is liked
-        dispatch(fetchLikesCount([id]));
+
+      if (likedTracks.includes(id)) {
+        await dispatch(unlikeTrack({ trackId: id, userId }));
+      } else {
+        await dispatch(likeTrack({
+          username: userEmail ?? '',
+          trackID: id,
+          artistName: artistName ?? '',
+          timestamp: new Date().toISOString(),
+          userId: userId,
+          likesCount: (likesCountState[id] ?? 0) + 1
+        }));
+      }
+
+      //       // Fetch the liked tracks for the user after a track is liked or unliked
+      dispatch(fetchLikedTracks(userId));
+
+      //       // Fetch the likes count after a track is liked or unliked
+      dispatch(fetchLikesCount([id]));
     }
   };
 
 
 
-
-
   useEffect(() => {
-    const trackRef = ref(realtimeDb, 'tracks/' + trackID.current);
+    dispatch(fetchLikedTracks(userId ?? ''));
+  }, [dispatch, userId]);
 
-    // Check if likesCount exists before initializing it to 0
-    get(trackRef).then((snapshot) => {
-      if (!snapshot.exists() || snapshot.val().likesCount === undefined) {
-        set(trackRef, { likesCount: 0 });
-      }
-    });
+  const handleCommentSubmit = ({ userId, content, trackId }: any) => {
+    console.log('comment is being submitted', { userId, content, trackId });
+    dispatch(addComment({ userID: userId, content, trackID: trackId, artistID: artistId }));
+  };
 
-    // Listen for changes in likesCount
-    const unsubscribe = onValue(trackRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setIsTrackLiked(likedTracks.includes(trackID.current));
-        setLikedTracksState(prevState => ({ ...prevState, [trackID.current]: likedTracks.includes(trackID.current) }));
-      }
-    });
-
-    // Clean up the listener when the component unmounts
-    return () => unsubscribe();
-
-  }, [trackID.current, likedTracks]);
-
-
-  
-  useEffect(() => {
-    const trackIds = tracks.map(track => track.trackID);
-    dispatch(fetchLikesCount(trackIds));
-    console.log('fetching likes count for tracks', trackIds);
-    console.log('track.trackID:', trackIds);
-
-  }, [dispatch, tracks]);
 
   return (
     <div>
@@ -235,15 +216,27 @@ socket.onmessage = (event) => {
         {sortedTracks.map(track => {
 
           return (
-            <div key={track.trackID} className='artisttracks' >
-              <h3>{track.trackName}</h3>
+            <div className='container d-flex justify-content-center'>
+              <div key={track.trackID} className='artisttracks' >
+                <h3>{track.trackName}</h3>
 
-              <Track src={track.trackFilePath} />
-              <button onClick={() => handleLikeAndIncrement(track.trackID)} disabled={!userId}>
-                {likedTrackIDs.includes(track.trackID) ? 'Unlike' : 'Like'}
-              </button>
-              <div>Likes: {likesCountState[track.trackID]}</div>
-             
+                <Track src={track.trackFilePath} />
+
+                <div className='likes-section'>
+
+                  <button className='track-like-button' onClick={() => handleLikeAndIncrement(track.trackID)} disabled={!userId}>
+                    {likedTracks.includes(track.trackID)
+                      ? <i className="fa-solid fa-heart liked"></i>
+                      : <i className="fa-solid fa-heart"></i>}
+                  </button>
+                  {likesCountState[track.trackID] > 0 && <div>Likes: {likesCountState[track.trackID]}</div>}
+                </div>
+                <button onClick={() => setVisibleCommentFormTrackId(visibleCommentFormTrackId === track.trackID ? null : track.trackID)}>
+                  {visibleCommentFormTrackId === track.trackID ? 'Hide Comment Form' : 'Show Comment Form'}
+                </button>
+                {visibleCommentFormTrackId === track.trackID && <TrackCommentForm trackId={track.trackID} onCommentSubmit={handleCommentSubmit} userId={userId} />}
+                <TrackComments trackId={track.trackID}  />
+              </div>
             </div>
           );
         })}

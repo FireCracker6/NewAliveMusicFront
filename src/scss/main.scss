@@ -1,5 +1,7 @@
 @import './core/variables';
 @import './core/base';
+@import './core/footer';
+@import './core/buttons';
 @import './core/mixins';
 @import './sections/Navbar';
 @import './sections/SignUp';
@@ -9,6 +11,8 @@
 @import './sections/ArtistProfile';
 @import './sections/PublicArtistProfile';
 @import './sections/TrackList';
+@import './sections/CommentsForm';
+@import './sections/TrackComments';
 
 * {
     margin: 0;

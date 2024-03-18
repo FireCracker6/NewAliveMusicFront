@@ -13,7 +13,11 @@ const UpdateProfile = () => {
   const [scale, setScale] = useState(1.0); // Define setScale
   const [position, setPosition] = useState({ x: 0.5, y: 0.5 });
   const [profilePicBlob, setProfilePicBlob] = useState<Blob | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
+  const toggleEditing = () => {
+    setIsEditing(!isEditing);
+  };
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -131,8 +135,9 @@ const UpdateProfile = () => {
   };
 
   return (
-
-    <div className="container d-flex justify-content-center py-4">
+<>
+    {/* <div className="container d-flex justify-content-center py-4">
+      
       <div className="create-profile-grid">
         <div className="form-container">
           <form onSubmit={handleSubmit} className="form">
@@ -153,31 +158,34 @@ const UpdateProfile = () => {
               <input type="text" value={websiteURL} onChange={(e) => setWebSiteURL(e.target.value)} />
             </div>
             <div className="profilePic mt-2">
-              <label htmlFor="ProfilePic">Profile Picture:</label>
-              <input type="file" onChange={handleNewImage} />
-              import AvatarEditor from 'react-avatar-editor';
+            
+            <input id="ProfilePic" className="mt-2  file-input" type="file" onChange={handleNewImage} />
+            <label className="upload-button" htmlFor="ProfilePic">Upload New Image</label>
+             
 
               {profilePicURL && (
-                <div>
-                  <AvatarEditor
+                <div className="profile-canvas mt-2" >
+                  <AvatarEditor 
                     ref={editor}
                     image={profilePicURL}
-                    width={250}
-                    height={250}
-                    border={50}
+                    width={290}
+                    height={290}
+                    border={20}
                     color={[255, 255, 255, 0.6]} // RGBA
                     scale={scale}
                     position={position}
                     onPositionChange={setPosition}
                   />
-                  <input name="scale" type="range" onChange={handleScale} min="1" max="2" step="0.01" defaultValue="1" />
-                  <button onClick={handleSave}>Save</button>
+                  <input className="mt-1" name="scale" type="range" onChange={handleScale} min="1" max="2" step="0.01" defaultValue="1" />
+                 <div>
+                 <button className="profile-button mt-1" onClick={handleSave}>Save Photo</button>
+                 </div>
                 </div>
               )}
             </div>
 
             <div className="button mt-4">
-              <button type="submit">Create Profile!</button>
+              <button className="profile-button " type="submit">Update Profile!</button>
             </div>
           </form>
         </div>
@@ -189,7 +197,103 @@ const UpdateProfile = () => {
           <p className="mt-1">Web Site: {websiteURL}</p>
         </div>
       </div>
-    </div>
+    </div> */}
+
+    <div className="container d-flex justify-content-center py-4">
+    <div className="create-profile-grid">
+     <div className="edit edit-buttons mb-2">
+     <button onClick={toggleEditing}>
+        {isEditing ? 'Cancel Editing' : 'Edit Profile'}
+      </button>
+     </div>
+      {isEditing ? (
+        // Render the editing form
+        <>
+         <div className="form-container">
+          <form onSubmit={handleSubmit} className="form">
+            <div className="fullname">
+              <label htmlFor="FullName">Full Name:</label>
+              <input  type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            </div>
+            <div className="bio mt-2">
+              <label htmlFor="Bio">Bio:</label>
+              <textarea value={bio} onChange={(e) => setBio(e.target.value)} />
+            </div>
+            <div className="location mt-2">
+              <label htmlFor="Location">Location:</label>
+              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
+            </div>
+            <div className="websiteURL mt-2">
+              <label htmlFor="WebSiteURL">Web site URL:</label>
+              <input type="text" value={websiteURL} onChange={(e) => setWebSiteURL(e.target.value)} />
+            </div>
+            <div className="profilePic mt-2">
+            
+            <input id="ProfilePic" className="mt-2  file-input" type="file" onChange={handleNewImage} />
+            <label className="upload-button" htmlFor="ProfilePic">Upload New Image</label>
+             
+
+              {profilePicURL && (
+                <div className="profile-canvas mt-2" >
+                  <AvatarEditor 
+                    ref={editor}
+                    image={profilePicURL}
+                    width={290}
+                    height={290}
+                    border={20}
+                    color={[255, 255, 255, 0.6]} // RGBA
+                    scale={scale}
+                    position={position}
+                    onPositionChange={setPosition}
+                  />
+                  <input className="mt-1" name="scale" type="range" onChange={handleScale} min="1" max="2" step="0.01" defaultValue="1" />
+                 <div>
+                 <button className="profile-button mt-1" onClick={handleSave}>Save Photo</button>
+                 </div>
+                </div>
+              )}
+            </div>
+
+            <div className="button mt-2 mb-2">
+              <button className="profile-button " type="submit">Update Profile!</button>
+            </div>
+          </form>
+        </div>
+        <div className="preview">
+          {profilePicURL && <img src={profilePicURL} alt="Profile preview" />}
+          <div className="mt-1">Name: {fullName}</div>
+          <div className="mt-1">Bio: {bio}</div>
+          <div className="mt-1">Location: {location}</div>
+          <div className="mt-1">Web Site: {websiteURL}</div>
+        </div>
+       
+        </>
+      ) : (
+        // Render the profile
+        <>
+         <div className="preview">
+          {profilePicURL &&
+          <div className="profile-prev-image">
+          <img src={profilePicURL} alt="Profile preview" />
+          </div>}
+       <div className="preview-info pt-1">
+       <div className="mt-1">Name: </div> <div>{fullName}</div>
+          <div className="mt-1">Bio:</div>
+          <div>{bio}</div>
+          <div className="mt-1">Location:</div>
+          <div> {location}</div>
+          <div className="mt-1">Web Site:</div>
+          <div> {websiteURL}</div>
+       </div>
+        </div>
+        </>
+      )}
+
+    
+      </div>
+
+</div>
+</>
   );
 };
 

@@ -10,7 +10,8 @@ type RoleCheckProps = {
 
 const RoleCheck: React.FC<RoleCheckProps> = ({ roles, children }) => {
   const { user, loading } = useContext(UserContext);
-  const rolecheckrole = JSON.parse(localStorage.getItem('roles') || '[]');
+  const rolecheckroleObject = JSON.parse(localStorage.getItem('roles') || '{}');
+  const rolecheckrole = rolecheckroleObject.$values || [];
   console.log('roles from rolebasedrole', rolecheckrole)
   const navigate = useNavigate();
 

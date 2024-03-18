@@ -63,6 +63,16 @@
    
    
    }
+   .likes-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  margin-top: -10px;
+    
+   width: 90%;
+   // border: 1px solid white;
+}
 
 }
 .pause-play-button {
@@ -131,3 +141,4 @@
         margin-bottom: 10px;
     }
 }
+

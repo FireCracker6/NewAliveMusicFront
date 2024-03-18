@@ -36,6 +36,7 @@ import UploadTrackForm from './Artists/UploadTrackForm';
 import JobInfo from './Artists/JobInfo';
 import TracksList from './Artists/TrackList';
 import UpdateProfile from './Profiles/UpdateUserProfile';
+import Footer from './Footer/Footer';
 interface AuthCallbackProps {
   setUser: Dispatch<SetStateAction<User>>;
 }
@@ -123,6 +124,7 @@ function App() {
           ) : null
         )}
       </header>
+  
 
       {user && !user.isAuthorized && <h1>Welcome to Alive!</h1>}
 
@@ -207,7 +209,9 @@ function App() {
 
 
       </Routes>
-
+      <footer>
+        <Footer />
+      </footer>
     </>
   );
 

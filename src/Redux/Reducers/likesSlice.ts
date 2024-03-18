@@ -32,9 +32,27 @@ export const fetchLikesCount = createAsyncThunk(
   }
 );
 
+export const fetchLikedTracks = createAsyncThunk(
+  'likes/fetchLikedTracks',
+  async (userId: string) => {
+    const response = await axios.get(`http://192.168.1.80:5053/api/Likes/${userId}`);
+    console.log('response from fetchLikedTracks', response.data.$values);
+    return response.data;
+  }
+);
+
+export const unlikeTrack = createAsyncThunk(
+  'likes/unlikeTrack',
+  async ({ trackId, userId }: { trackId: number, userId: string }) => {
+    const response = await axios.delete(`http://192.168.1.80:5053/api/Likes/${userId}?trackId=${trackId}`);
+    return response.data;
+  }
+);
+
 type Track = { username: string, trackID: number, artistName: string, timestamp: string, likesCount: number };
 
 interface LikesState {
+  likedTrackIDs: number[];
   likedTracks: number[];
   tracks: Track[];
   likesCountState: { [key: number]: number };
@@ -42,6 +60,7 @@ interface LikesState {
 }
 
 const initialState: LikesState = {
+  likedTrackIDs: [],
   likedTracks: [],
   tracks: [],
   likesCountState: {}, 
@@ -70,7 +89,7 @@ const likesSlice = createSlice({
       state.likedTracks = state.likedTracks.filter(trackID => trackID !== action.payload);
     },
     updateLikedTrackIDs: (state, action: PayloadAction<number[]>) => {
-      state.likedTracks = action.payload;
+      state.likedTrackIDs = action.payload;
     },
   },
   extraReducers: builder => {
@@ -96,6 +115,16 @@ const likesSlice = createSlice({
         ...state.likesCountState,
         ...action.payload,
       };
+    })
+    .addCase(updateLikedTrackIDs, (state, action: PayloadAction<number[]>) => {
+      state.likedTrackIDs = action.payload;
+    })
+    .addCase(fetchLikedTracks.fulfilled, (state, action) => {
+      if (Array.isArray(action.payload.data.$values)) {
+        state.likedTracks = action.payload.data.$values.map((like: any) => like.trackID);
+      } else {
+        console.error('action.payload.data.$values is not an array:', action.payload.data.$values);
+      }
     })
    
     .addCase(updateLikesCount, (state, action: PayloadAction<{ trackId: number, likesCount: number }>) => {

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import logo from '../images/logos/alive-logo-transparent-png.png';
 import SignUp from '../SignUpSignIn/SignUp';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { CustomJwtPayload } from '../SignUpSignIn/AuthCallBack';
 import UserContext from '../Contexts/UserContext';
@@ -135,10 +135,10 @@ useEffect(() => {
   return (
     <nav className="navbar">
       <div className="container">
-        <div className='logo'>
-          ALIVE!
-          <span className='subtitle'>Musical Minds</span>
-        </div>
+      <Link to="/" className='logo'>
+        ALIVE!
+        <span className='subtitle'>Musical Minds</span>
+      </Link>
         <button title='navbar' className={`menu-toggle ${menuOpen ? 'open' : ''}`} onClick={toggleMenu}></button>
         <div className={`menu-groups ${menuOpen ? 'open' : ''}`}>
           <ul className="menu-group center">

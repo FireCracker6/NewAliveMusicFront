@@ -66,7 +66,7 @@ const Track: React.FC<{ src: string }> = ({ src }) => {
   };
 
   return (
-    <div className='container d-flex justify-content-center'>
+
     <div className='artisttracks'>
       <div className='pause-play-button'>
       <button  onClick={togglePlayPause}>
@@ -86,7 +86,7 @@ const Track: React.FC<{ src: string }> = ({ src }) => {
         Your browser does not support the audio element.
       </audio>
     </div>
-    </div>
+   
   );
 };
 

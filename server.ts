@@ -56,7 +56,8 @@ wss.on('connection', ws => {
 
   // Fetch track IDs from the API
   axios.get('http://192.168.1.80:5053/api/Track').then(response => {
-    const trackIds = response.data.map((track: any) => track.trackID);
+    console.log('response.data:', response.data.$values);
+    const trackIds = response.data.$values.map((track: any) => track.trackID);
 console.log('trackIds:', trackIds);
     // Simulate a 'track liked' event every 5 seconds
     setInterval(async () => {

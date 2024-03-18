@@ -1,0 +1,103 @@
+
+
+.profile-button {
+    display: grid;
+    width: 100%;
+  background-color:#958b8b;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+
+
+  &:hover {
+    background-color: lighten(#958b8b, 20%);
+  }
+}
+.pick-file-button {
+   
+  display: grid;
+  width: 75%;
+  background-color:#958b8b;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: lighten(#958b8b, 20%);
+  }
+}
+
+.edit-buttons {
+    display: flex;
+   // justify-content: center;
+   width: 100%;
+
+    @media(min-width: 768px) {
+       display: block;
+    }
+  
+   button {
+    width: 95%;
+    background-color: #3d72b3;
+    border: none;
+    color: #abc8ec;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  
+    &:hover {
+      background-color: lighten(#3d72b3, 20%);
+    }
+   }
+}
+
+input, textArea {
+    background-color: #d1cbd6;
+    border: none;
+    padding: 5px;
+}
+
+.track-like-button {
+  //  width: 100%;
+    height: 30px;
+    background-color: transparent;
+    border: none;
+  
+   
+    outline: none;
+    transition: all 0.3s ease;
+   
+
+    i {
+        cursor: pointer;
+        color: #fff;
+        font-size: 1.5em;
+    
+        &.liked {
+          color: #d22121;
+        }
+    
+        &:hover {
+          transition: all 0.3s ease-in-out;
+          transform: scale(1.3);
+          color: #d22121;
+        }
+      }
+  
+  
+  
+  
+}
+
