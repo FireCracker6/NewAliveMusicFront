@@ -1,114 +1,183 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { Init } from "v8";
+
+interface CommentResponse {
+  [trackId: number]: Comment[];
+}
 interface CommentsState {
   comments: Record<number, Comment[]>; // Store comments by track ID
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+  artistId: { [key: number]: number };
 }
 // Define the Comment type
 interface Comment {
-    //userName?: string;
-    userID?: string;
-    artistID?: number;
-    trackID: number;
-    childComments?: Comment[];
-   //commentID: number;
-   
-    parentCommentID?: string;
-    content: string;
-  }
-  
-  const initialState: CommentsState = {
-    comments: [],
-    status: 'idle',
-    error: null
-  };
-  function extractComments(data: any): Comment[] {
-    let comments: Comment[] = [];
-  
-    // Extract the top-level comments
-    if (data.$values) {
-      comments = data.$values.flatMap((comment: any) => {
-        // Check if the comment is a reference
-        if (comment.$ref) {
-          // Find the referenced comment in the data
-          const referencedComment = data.$values.find((c: any) => c.$id === comment.$ref);
-          if (referencedComment) {
-            comment = referencedComment;
-          } else {
-            // If the referenced comment is not found, return an empty array
-            return [];
-          }
-        }
-  
-        // Extract the comment data
-        return [{
-          commentID: comment.commentID,
-          content: comment.content,
-          timestamp: comment.timestamp,
-          userID: comment.userID,
-          trackID: comment.trackID,
-          artistID: comment.artistID,
-          parentCommentID: comment.parentCommentID,
-          childComments: comment.childComments ? extractComments(comment.childComments) : [],  // Recursively extract child comments
-        }];
-      });
-    }
-  
-    return comments;
-  }
-  
-  // export const fetchCommentsByTrackId = createAsyncThunk(
-  //   'comments/fetchCommentsByTrackId',
-  //   async (trackId: number, { rejectWithValue }) => {
-  //     try {
-  //       const response = await axios.get(`http://192.168.1.80:5053/api/Comments/track/${trackId}/comments`);
-  //       console.log('Full response:', response);
-        
-  //       const comments = response.data.$values;
-  //       const childComments = response.data.$values.flatMap((comment: any) => comment.childComments);
-  //       console.log('Child comments:', childComments);
-  //       return { trackId, comments };
-  //     } catch (err: any) {
-  //       return rejectWithValue(err.message);
-  //     }
-  //   }
-  // );
+  userName?: string;
+  commentID?: number;
+  userID?: string;
+  artistID?: number;
+  trackID: number;
+  timestamp?: string;
+  childComments?: Comment[];
+  userPicturePath?: string;
+ 
+  parentCommentID?: string;
+  content: string;
 
- export const fetchCommentsByTrackId = createAsyncThunk(
-    'comments/fetchCommentsByTrackId',
-    async (trackId: any, { rejectWithValue }) => {
-      try {
-        const response = await axios.get(`http://192.168.1.80:5053/api/Comments/track/${trackId}/comments`);
-        const comments = response.data.$values;
-        return { [trackId]: comments };
-      } catch (err: any) {
-        return rejectWithValue(err.message);
-      }
+  likes?: number | string[];
+}
+
+const initialState: CommentsState = {
+  comments: {},
+  artistId: {},
+
+  status: 'idle',
+  error: null
+};
+
+
+
+
+
+export const fetchCommentsByTrackId = createAsyncThunk(
+  'comments/fetchCommentsByTrackId',
+  async (trackId: any, { rejectWithValue, getState }) => {
+    try {
+      const response = await axios.get(`http://192.168.1.80:5053/api/Comments/track/${trackId}/comments`);
+      const comments = response.data.$values;
+
+      // Get the current state
+      const state = getState() as CommentsState;
+
+      // Filter out any comments that have already been added
+      const newComments = comments.filter((comment: any) => !state.comments[trackId]?.includes(comment.commentID));
+
+      // Extract the artistId from the first comment, or use a default value if there are no comments
+      const artistId = newComments[0]?.artistID ?? null;
+
+      const payload = { [trackId]: newComments, artistId };
+      console.log('Payload:', payload); // Add this line
+      return payload;
+    } catch (err: any) {
+      return rejectWithValue(err.message);
     }
-  );
-  
-export const addComment = createAsyncThunk<Comment, Comment>(
-  'comments/addComment',
-  async (commentDTO) => {
-    const response = await axios.post('http://192.168.1.80:5053/api/Comments/addcomment', commentDTO);
-    return response.data;
   }
 );
-  
+export const addComment = createAsyncThunk(
+  'comments/addComment',
+  async ({ userID, content, trackID, artistID }: Comment, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`http://192.168.1.80:5053/api/Comments/addComment`, {
+        userID,
+        content,
+        trackID,
+        artistID
+      });
+
+      // The server should respond with the created comment
+      const comment = response.data;
+
+      // Return the comment and trackID so they can be added to the state
+      return { [trackID]: comment };
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const addReply = createAsyncThunk(
+  'comments/addReply',
+  async ({ userID, content, trackID, artistID, parentCommentID }: Comment, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`http://192.168.1.80:5053/api/Comments/addreply`, {
+        userID,
+        content,
+        trackID,
+        artistID,
+        parentCommentID,
+      });
+
+      const reply = response.data;
+      console.log('Reply:', reply);
+
+      return { [trackID]: reply };
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const likeComment = createAsyncThunk(
+  'comments/likeComment',
+  async (commentId: number, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`http://192.168.1.80:5053/api/Comments/${commentId}/like`);
+      return { commentId, likes: response.data };
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const unlikeComment = createAsyncThunk(
+  'comments/unlikeComment',
+  async (commentId: number, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(`http://192.168.1.80:5053/api/Comments/${commentId}/like`);
+      return { commentId, likes: response.data.likes };
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+
 export const commentsSlice = createSlice({
   name: 'comments',
   initialState,
 
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchCommentsByTrackId.fulfilled, (state, action) => {
-      state.comments = { ...state.comments, ...action.payload };
+    builder
+    .addCase(fetchCommentsByTrackId.fulfilled, (state, action: PayloadAction<{ [trackId: number]: Comment[], artistId?: number | null }>) => {
+      const trackId = Object.keys(action.payload)[0];
+      const comments = action.payload[Number(trackId)];
+      const artistId = action.payload.artistId;
+    
+      console.log('TrackId:', trackId);
+      console.log('ArtistId:', artistId);
+      console.log('Comments:', comments);
+    
+      state.comments[Number(trackId)] = comments;
+      state.artistId[Number(trackId)] = artistId ?? 0;
     })
       .addCase(fetchCommentsByTrackId.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message ?? null;
-      });
+      })
+      .addCase(addComment.fulfilled, (state, action) => {
+        const trackId = Object.keys(action.payload)[0];
+        if (!(state.comments as any)[trackId]) {
+          (state.comments as any)[trackId] = [];
+        }
+        (state.comments as any)[trackId].push(action.payload[Number(trackId)]);
+      })
+
+      .addCase(addReply.fulfilled, (state, action) => {
+        const trackId = Object.keys(action.payload)[0];
+        const reply = action.payload[Number(trackId)];
+
+
+        // Find the comment being replied to and add the reply to its replies array
+        const comment = (state.comments as any)[trackId].find((comment: any) => comment.commentID === reply.parentCommentId);
+        if (comment) {
+          if (!comment.replies) {
+            comment.replies = [];
+          }
+          comment.replies.push(reply);
+        }
+      })
   }
 });
 export default commentsSlice.reducer;

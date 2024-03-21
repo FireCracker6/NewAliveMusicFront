@@ -54,25 +54,34 @@ const wss = new WebSocket.Server({ server });
 wss.on('connection', ws => {
   console.log('Client connected');
 
+
   // Fetch track IDs from the API
   axios.get('http://192.168.1.80:5053/api/Track').then(response => {
     console.log('response.data:', response.data.$values);
     const trackIds = response.data.$values.map((track: any) => track.trackID);
-console.log('trackIds:', trackIds);
+    console.log('trackIds:', trackIds);
+
     // Simulate a 'track liked' event every 5 seconds
     setInterval(async () => {
       const trackId = trackIds[Math.floor(Math.random() * trackIds.length)]; // Select a random track ID from the array
-     const likesCountResponse = await axios.get(`http://192.168.1.80:5053/api/Likes/${trackId}/likescount`);
+      const likesCountResponse = await axios.get(`http://192.168.1.80:5053/api/Likes/${trackId}/likescount`);
       const likesCount = likesCountResponse.data;
+
+      // Fetch comments for the track
+      const commentsResponse = await axios.get(`http://192.168.1.80:5053/api/Comments/track/${trackId}/comments`);
+      const comments = commentsResponse.data.$values;
 
       const message = JSON.stringify({
         trackId: trackId,
-      likesCount: likesCount,
+        likesCount: likesCount,
+        comments: comments, // Include comments in the WebSocket message
       });
 
       ws.send(message);
     }, 5000);
   });
+
+  
 
   ws.on('close', () => {
     console.log('Client disconnected');

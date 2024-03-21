@@ -37,6 +37,7 @@ import JobInfo from './Artists/JobInfo';
 import TracksList from './Artists/TrackList';
 import UpdateProfile from './Profiles/UpdateUserProfile';
 import Footer from './Footer/Footer';
+import EmojiPickerTest from './Artists/EmotePickerTest';
 interface AuthCallbackProps {
   setUser: Dispatch<SetStateAction<User>>;
 }
@@ -198,9 +199,14 @@ function App() {
           </RoleCheck>
         } />
 
-<Route path='/tracklist' element={
+<Route path='/tracklist/:artistId' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <TracksList />
+          </RoleCheck>
+        } />
+        <Route path='/emotepicker' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <EmojiPickerTest />
           </RoleCheck>
         } />
 

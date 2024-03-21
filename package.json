@@ -4,6 +4,8 @@
   "private": true,
   "proxy": "http://192.168.1.80:3001",
   "dependencies": {
+    "@emoji-mart/data": "^1.1.2",
+    "@emoji-mart/react": "^1.1.1",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
@@ -26,6 +28,8 @@
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.2",
     "cors": "^2.8.5",
+    "emoji-mart": "^5.5.2",
+    "emoji-picker-react": "^4.9.2",
     "esm": "^3.2.25",
     "fabric": "^5.3.0",
     "firebase": "^10.8.1",
@@ -76,7 +80,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
-    "@types/node": "^20.11.24",
+    "@types/node": "^20.11.30",
     "@types/p5": "^1.7.6",
     "@types/react-modal": "^3.16.3",
     "concurrently": "^8.2.2",

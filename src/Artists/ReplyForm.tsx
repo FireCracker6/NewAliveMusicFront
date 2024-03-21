@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useState, useRef, useEffect } from "react";
 import { isAuthenticated } from "../Authentication/IsTokenValid";
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 
-const TrackCommentForm = ({ trackId, onCommentSubmit, onFormSubmit }: any) => {
+
+const ReplyForm = ({ trackId, artistId, parentCommentId, onReplySubmit, onFormClose }: any) => {
     const storedUserName = localStorage.getItem('userEmail') || '';
     const [userName, setUserName] = useState(storedUserName);
     const [userId, setUserId] = useState<string | undefined>(undefined)
@@ -16,7 +17,7 @@ const TrackCommentForm = ({ trackId, onCommentSubmit, onFormSubmit }: any) => {
         e.preventDefault();
         setShowEmojiPicker(!showEmojiPicker);
     };
-    
+
     const addEmoji = (emoji: any) => {
         console.log(emoji);
         const emojiCharacter = emoji.native;
@@ -43,14 +44,20 @@ const TrackCommentForm = ({ trackId, onCommentSubmit, onFormSubmit }: any) => {
         };
     }, []);
 
-    const handleSubmit = (e: any) => {
-        e.preventDefault();
-        onCommentSubmit({ userId, content, trackId });
-       onFormSubmit();
-
-        setContent('');
+    // Inside ReplyForm component
+const handleSubmit = (event: any) => {
+    event.preventDefault();
+    const reply = {
+        userId,
+        content,
+        trackID: trackId,
+        artistID: artistId, // Make sure to include this
+        parentCommentId
     };
-
+    onReplySubmit(reply);
+    setContent('');
+    onFormClose();
+};
     return (
         <form onSubmit={handleSubmit} className="comments-form">
             <input
@@ -76,4 +83,4 @@ const TrackCommentForm = ({ trackId, onCommentSubmit, onFormSubmit }: any) => {
     );
 }
 
-export default TrackCommentForm;
+export default ReplyForm;

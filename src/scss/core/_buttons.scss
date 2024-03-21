@@ -95,9 +95,78 @@ input, textArea {
           color: #d22121;
         }
       }
-  
-  
-  
-  
 }
+
+.add-hide-comment-button {
+  display: flex;
+  width:250px;
+  justify-content: center;
+  align-items: center;
+  background-color: #3d72b3;
+  border: none;
+  color: #abc8ec;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: lighten(#3d72b3, 20%);
+  }
+}
+.comment-button {
+  display: grid;
+  width: 100%;
+  background-color: #3d72b3;
+  border: none;
+  color: #abc8ec;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: lighten(#3d72b3, 20%);
+  }
+}
+.reply-button {
+  display: grid;
+  width: 100%;
+  background-color: #3d72b3;
+  border: none;
+  color: #abc8ec;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: lighten(#3d72b3, 20%);
+  }
+}
+.reply-submit {
+  display: grid;
+  width: 100%;
+  background-color: #3d72b3;
+  border: none;
+  color: #abc8ec;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: lighten(#3d72b3, 20%);
+  }
+}
+
+
 

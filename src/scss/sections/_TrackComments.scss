@@ -1,34 +1,34 @@
 .comments-container {
- display: flex;
- justify-content: center;
+ display: grid;
+ grid-template-columns: 1fr;
+ //border: 1px solid pink;
  width: 90%;
- border: 1px solid pink;
     .comment {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         width: 100%;
-      background-color: #141614;
+      background-color: #14161444;
       padding: 10px;
+      border-bottom: 1px solid pink;
+    
 
+ 
+      
   
-      .comment-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-  
-        .profile-picture {
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          margin-right: 10px;
+        .profile-pic {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+          img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+          }
         }
   
-        .comment-author {
-          margin: 0;
-        }
-      }
-  
+    
       .comment-content {
         display: grid;
         margin: 0 0 10px 0;
@@ -36,6 +36,7 @@
   
      .reply-button {
         background-color: #f0f0f0;
+        color: #749093;
         border: none;
         font-size: 12px;
         padding: 10px;
@@ -44,7 +45,9 @@
       }
   
       .reply-button:hover {
-        background-color: #e0e0e0;
+        background-color: #9df3fd;
+        color: #69a2a9;
+        transition: all 0.3s ease-in-out;
       }
   
       .reply-form {
@@ -68,5 +71,9 @@
           background-color: #e0e0e0;
         }
      }
-    }
   }
+  }
+
+  .reply {
+    padding-left: 20px;
+}

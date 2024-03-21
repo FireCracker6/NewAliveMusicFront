@@ -12,8 +12,15 @@ import { isAuthenticated } from '../Authentication/IsTokenValid';
 
 import { ref, set, update, get, increment, onValue } from "firebase/database";
 import TrackComments from './TrackComments';
-import { addComment } from '../Redux/Reducers/commentsSlice';
+import { addComment, fetchCommentsByTrackId } from '../Redux/Reducers/commentsSlice';
 import TrackCommentForm from './TrackCommentForm';
+import { useParams } from 'react-router-dom';
+
+interface TrackListProps {
+  artistId: number;
+}
+
+
 interface Track {
   artistName: string;
   trackID: number;
@@ -37,7 +44,21 @@ interface Artist {
   artistPicturePath: string;
 }
 
+interface Comment {
+  userName?: string;
+  commentID?: number;
+  userID?: string;
+  artistID?: number;
+  trackID: number;
+  timestamp?: string;
+  childComments?: Comment[];
+  userPicturePath?: string;
+  parentCommentID?: string;
+  content: string;
+}
+
 const TracksList: React.FC = () => {
+  const { artistId } = useParams<{ artistId: string }>();
   const [tracks, setTracks] = useState<Track[]>([]);
   const [artistName, setArtistName] = useState<string | null>(null);
   const [artistPicturePath, setArtistPicturePath] = useState<string | null>(null);
@@ -45,13 +66,16 @@ const TracksList: React.FC = () => {
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const { user } = useContext(UserContext);
   const dispatch = useDispatch<AppDispatch>();
-  const artistId = 2;
+  
   const likedTracks = useSelector((state: RootState) => state.likes.likedTracks);
   const likedTrackIDs = useSelector((state: RootState) => state.likes.likedTrackIDs, shallowEqual);
   const [likesCount, setLikesCount] = useState(0);
   const [sortedTracks, setSortedTracks] = useState<Track[]>([]);
   const [isCommentFormVisible, setCommentFormVisible] = useState(false);
   const [visibleCommentFormTrackId, setVisibleCommentFormTrackId] = useState<Number | null>(null);
+  const [addedCommentIds, setAddedCommentIds] = useState<Set<string>>(new Set());
+  const [showForm, setShowForm] = useState(true);
+
   const likesCountState = useSelector((state: any) => {
     console.log('Redux state', state);
     return state.likes.likesCountState;
@@ -85,24 +109,34 @@ const TracksList: React.FC = () => {
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        const { trackId, likesCount } = data;
-
+        console.log('Received data:', data); // Log the received data
+    
+        const { trackId, likesCount, comments } = data; // Change 'comment' to 'comments'
+    
         const trackID = trackId || data.TrackId || data.TrackID;
         const likes = likesCount || data.LikesCount || data.likesCount;
         dispatch(incrementLikesCount({ trackID: trackID, count: likes }));
-
+    
         if (trackID in likesCountState) {
           dispatch(updateLikesCount({ trackId: trackID, likesCount: likes }));
         }
+    
+        // Handle comment updates
+        if (comments) {
+          dispatch(fetchCommentsByTrackId(trackID));
+        } else {
+          console.log('No comment in data'); // Log when there's no comment
+        }
+     
       } catch (error) {
         console.error('Error parsing WebSocket message', error);
       }
     };
-
+    
     return () => {
       socket.close();
     };
-  }, [dispatch]);
+    }, [dispatch]);
 
   useEffect(() => {
     const fetchTracks = async () => {
@@ -194,12 +228,19 @@ const TracksList: React.FC = () => {
 
   const handleCommentSubmit = ({ userId, content, trackId }: any) => {
     console.log('comment is being submitted', { userId, content, trackId });
-    dispatch(addComment({ userID: userId, content, trackID: trackId, artistID: artistId }));
+    dispatch(addComment({ userID: userId, content, trackID: trackId, artistID: parseInt(artistId ?? '')  }));
+    setShowForm(true);
   };
 
 
+
+
+    const handleFormSubmit = () => {
+        setShowForm(false);
+    };
+
   return (
-    <div>
+    <div className='mb-5 pb-5'>
       <div className="artisttrack-profile">
 
         <div className="artisttrack-banner">
@@ -231,10 +272,10 @@ const TracksList: React.FC = () => {
                   </button>
                   {likesCountState[track.trackID] > 0 && <div>Likes: {likesCountState[track.trackID]}</div>}
                 </div>
-                <button onClick={() => setVisibleCommentFormTrackId(visibleCommentFormTrackId === track.trackID ? null : track.trackID)}>
-                  {visibleCommentFormTrackId === track.trackID ? 'Hide Comment Form' : 'Show Comment Form'}
+                <button className='add-hide-comment-button ' onClick={() => setVisibleCommentFormTrackId(visibleCommentFormTrackId === track.trackID ? null : track.trackID)}>
+                {visibleCommentFormTrackId === track.trackID ? 'Hide Comment Form' : <><span>Add a comment</span>&nbsp;<i className="fa-sharp fa-regular fa-comment-smile"></i></>}
                 </button>
-                {visibleCommentFormTrackId === track.trackID && <TrackCommentForm trackId={track.trackID} onCommentSubmit={handleCommentSubmit} userId={userId} />}
+                {visibleCommentFormTrackId === track.trackID && showForm && <TrackCommentForm trackId={track.trackID} onCommentSubmit={handleCommentSubmit} onFormSubmit={handleFormSubmit} userId={userId} />}
                 <TrackComments trackId={track.trackID}  />
               </div>
             </div>
