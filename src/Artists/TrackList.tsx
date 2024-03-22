@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import Track from './Track';
 import { app, db, realtimeDb } from '../Firebase/firebaseConfig';
-import { addDoc, collection, getDocs, getFirestore, query, serverTimestamp, where } from 'firebase/firestore';
+import { addDoc, collection, disableNetwork, getDocs, getFirestore, query, serverTimestamp, where } from 'firebase/firestore';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { addLikedTrack, fetchLikedTracks, fetchLikesCount, incrementLikesCount, likeTrack, unlikeTrack, updateLikedTrackIDs, updateLikesCount } from '../Redux/Reducers/likesSlice';
 import { AppDispatch, RootState } from '../Redux/store';
@@ -15,6 +15,7 @@ import TrackComments from './TrackComments';
 import { addComment, fetchCommentsByTrackId } from '../Redux/Reducers/commentsSlice';
 import TrackCommentForm from './TrackCommentForm';
 import { useParams } from 'react-router-dom';
+import { fetchCommentsLikesCount, incrementCommentsLikesCount, updateCommentsLikesCount } from '../Redux/Reducers/commentsLikesSlice';
 
 interface TrackListProps {
   artistId: number;
@@ -81,62 +82,82 @@ const TracksList: React.FC = () => {
     return state.likes.likesCountState;
   }, shallowEqual);
 
+  const commentsLikesCountState = useSelector((state: any) => {
+    console.log('Redux state', state);
+    return state.commentsLikes.commentsLikesCountState;
+  
+  }, shallowEqual)
+
   const [isTrackLiked, setIsTrackLiked] = useState(false);
   const [likedTracksState, setLikedTracksState] = useState<Record<number, boolean>>({});
   const [lastUpdate, setLastUpdate] = useState(Date.now());
   console.log('likesCountState:', likesCountState);
+  console.log('commentsLikesCountState:', commentsLikesCountState);
 
   // Inside your component
   useEffect(() => {
-    let socket = new WebSocket('ws://192.168.1.80:3001');
-
-    socket.onopen = (event) => {
-      console.log('WebSocket connection opened', event);
-    };
-
-    socket.onerror = (error) => {
-      console.error('WebSocket error', error);
-    };
-
-    socket.onclose = (event) => {
-      console.log('WebSocket connection closed', event);
-      // Try to reconnect after 5 seconds
-      setTimeout(() => {
-        socket = new WebSocket('ws://192.168.1.80:3001');
-      }, 5000);
-    };
-
-    socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log('Received data:', data); // Log the received data
-    
-        const { trackId, likesCount, comments } = data; // Change 'comment' to 'comments'
-    
-        const trackID = trackId || data.TrackId || data.TrackID;
-        const likes = likesCount || data.LikesCount || data.likesCount;
-        dispatch(incrementLikesCount({ trackID: trackID, count: likes }));
-    
-        if (trackID in likesCountState) {
+    let socket: WebSocket | null = null;
+  
+    const connect = () => {
+      socket = new WebSocket('ws://192.168.1.80:3001');
+  
+      socket.onopen = (event) => {
+        console.log('WebSocket connection opened', event);
+      };
+  
+      socket.onerror = (error) => {
+        console.error('WebSocket error', error);
+      };
+  
+      socket.onclose = (event) => {
+        console.log('WebSocket connection closed', event);
+        // Try to reconnect after 5 seconds
+        setTimeout(connect, 5000);
+      };
+  
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          console.log('Received data:', data); // Log the received data
+  
+          const { trackId, likesCount, comments } = data; // Change 'comment' to 'comments'
+  
+          const trackID = trackId || data.TrackId || data.TrackID;
+          const likes = likesCount || data.LikesCount || data.likesCount;
+          dispatch(incrementLikesCount({ trackID: trackID, count: likes }));
+  
+          // Always dispatch updateLikesCount
           dispatch(updateLikesCount({ trackId: trackID, likesCount: likes }));
+          //dispatch(fetchCommentsLikesCount(trackId));
+          console.log('Dispatching fetchCommentsLikesCount with trackId:', trackId);
+          dispatch(fetchCommentsLikesCount(trackId));
+          // Handle comment updates
+          if (comments) {
+            dispatch(fetchCommentsByTrackId(trackID));
+            const commentIds = comments.map((comment: any) => comment.commentID);
+            commentIds.forEach((commentId: number) => {
+              dispatch(incrementCommentsLikesCount({ commentId, count: likes }));
+            
+             dispatch(updateCommentsLikesCount({ commentId, likesCount: likes }));
+            });
+          } else {
+            console.log('No comment in data'); // Log when there's no comment
+          }
+  
+        } catch (error) {
+          console.error('Error parsing WebSocket message', error);
         }
-    
-        // Handle comment updates
-        if (comments) {
-          dispatch(fetchCommentsByTrackId(trackID));
-        } else {
-          console.log('No comment in data'); // Log when there's no comment
-        }
-     
-      } catch (error) {
-        console.error('Error parsing WebSocket message', error);
+      };
+    };
+  
+    connect();
+  
+    return () => {
+      if (socket) {
+        socket.close();
       }
     };
-    
-    return () => {
-      socket.close();
-    };
-    }, [dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchTracks = async () => {
@@ -224,6 +245,8 @@ const TracksList: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchLikedTracks(userId ?? ''));
+    dispatch(fetchCommentsByTrackId(trackID.current));
+  
   }, [dispatch, userId]);
 
   const handleCommentSubmit = ({ userId, content, trackId }: any) => {

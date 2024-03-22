@@ -108,29 +108,6 @@ export const addReply = createAsyncThunk(
   }
 );
 
-export const likeComment = createAsyncThunk(
-  'comments/likeComment',
-  async (commentId: number, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(`http://192.168.1.80:5053/api/Comments/${commentId}/like`);
-      return { commentId, likes: response.data };
-    } catch (err: any) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
-
-export const unlikeComment = createAsyncThunk(
-  'comments/unlikeComment',
-  async (commentId: number, { rejectWithValue }) => {
-    try {
-      const response = await axios.delete(`http://192.168.1.80:5053/api/Comments/${commentId}/like`);
-      return { commentId, likes: response.data.likes };
-    } catch (err: any) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
 
 
 export const commentsSlice = createSlice({
@@ -178,6 +155,8 @@ export const commentsSlice = createSlice({
           comment.replies.push(reply);
         }
       })
+
+     
   }
 });
 export default commentsSlice.reducer;

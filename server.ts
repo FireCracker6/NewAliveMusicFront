@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import WebSocket from 'ws';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { error } from 'console';
 
 const app = express();
 app.use(cors()); // Enable CORS
@@ -71,13 +72,33 @@ wss.on('connection', ws => {
       const commentsResponse = await axios.get(`http://192.168.1.80:5053/api/Comments/track/${trackId}/comments`);
       const comments = commentsResponse.data.$values;
 
-      const message = JSON.stringify({
-        trackId: trackId,
-        likesCount: likesCount,
-        comments: comments, // Include comments in the WebSocket message
-      });
 
-      ws.send(message);
+      // Fetch commentLikes for the comments and replies
+// Fetch commentLikes for the comments and replies
+let commentslikesCount: { [key: string]: any } = {}; // Change index signature to string
+try {
+  const response = await axios.get(`http://192.168.1.80:5053/api/CommentLikes/track/${trackId}/likescount`);
+  commentslikesCount = response.data;
+  delete commentslikesCount['$id']; // Ignore $id property
+
+  // Log likes count for each comment
+  for (const commentId in commentslikesCount) {
+    if (commentslikesCount.hasOwnProperty(commentId)) {
+      console.log(`Likes count for comment ${commentId} in track ${trackId}:`, commentslikesCount[commentId]);
+    }
+  }
+} catch (error) {
+  console.error('Error fetching likes count:', error);
+}
+
+const message = JSON.stringify({
+  trackId: trackId,
+  likesCount: likesCount,
+  comments: comments, 
+  commentslikesCount: commentslikesCount // Include comments in the WebSocket message
+});
+
+ws.send(message);
     }, 5000);
   });
 
