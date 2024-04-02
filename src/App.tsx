@@ -38,6 +38,10 @@ import TracksList from './Artists/TrackList';
 import UpdateProfile from './Profiles/UpdateUserProfile';
 import Footer from './Footer/Footer';
 import EmojiPickerTest from './Artists/EmotePickerTest';
+import ArtistTracksList from './Artists/BackOffice/ArtistTrackList';
+import CreateAlbum from './Artists/BackOffice/CreateAlbum';
+import AlbumsList from './Artists/BackOffice/AlbumList';
+import SubscriptionForm from './Subscriptions/SubscriptionForm';
 interface AuthCallbackProps {
   setUser: Dispatch<SetStateAction<User>>;
 }
@@ -186,22 +190,40 @@ function App() {
           </RoleCheck>
         } />
 
-<Route path='/uploadTrack' element={
+<Route path='/uploadTrack/:artistId' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <UploadTrackForm />
           </RoleCheck>
         } />
 
 
-<Route path='/jobinfo' element={
+{/* <Route path='/jobinfo' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <JobInfo jobId='3da13b83-de45-4838-a44d-f5f0d2bfa284' apiKey='2555cad4-34a6-427a-a2e8-965f848f69fc' />
           </RoleCheck>
-        } />
+        } /> */}
 
 <Route path='/tracklist/:artistId' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <TracksList />
+          </RoleCheck>
+        } />
+
+<Route path='/artist-tracklist/:artistId' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <ArtistTracksList />
+          </RoleCheck>
+        } />
+
+<Route path='/albumlist/:artistId' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <AlbumsList />
+          </RoleCheck>
+        } />
+
+<Route path='/create-album/:artistId' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <CreateAlbum />
           </RoleCheck>
         } />
         <Route path='/emotepicker' element={
@@ -209,6 +231,13 @@ function App() {
             <EmojiPickerTest />
           </RoleCheck>
         } />
+
+<Route path='/subscription' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <SubscriptionForm />
+          </RoleCheck>
+        } />
+
 
 
 

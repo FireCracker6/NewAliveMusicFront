@@ -21,10 +21,21 @@
           justify-content: space-between;
           align-items: center;
           margin-bottom: 10px;
+
+          .username, .timestamp {
+            @media (max-width: 768px) {
+              font-size: 12px;
+            }
+          }
           img {
             width: 50px;
             height: 50px;
             border-radius: 50%;
+
+            @media (max-width: 768px) {
+              width: 25px;
+              height: 25px;
+            }
           }
         }
   
@@ -32,6 +43,39 @@
       .comment-content {
         display: grid;
         margin: 0 0 10px 0;
+
+        .comment-text {
+          color: #749093;
+          font-size: 14px;
+          margin-bottom: 10px;
+        }
+
+        .comment-likes {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin: 10px 0;
+          .like-button {
+            background-color: #f0f0f0;
+            color: #749093;
+            border: none;
+            font-size: 12px;
+            padding: 10px;
+            cursor: pointer;
+          }
+  
+          .like-button:hover {
+            background-color: #9df3fd;
+            color: #69a2a9;
+            transition: all 0.3s ease-in-out;
+          }
+  
+          .likes {
+            color: #749093;
+            font-size: 12px;
+          }
+        
+        }
       }
   
      .reply-button {
@@ -76,4 +120,8 @@
 
   .reply {
     padding-left: 20px;
+
+    @media(max-width: 768px) {
+      padding-left: 10px;
+    }
 }

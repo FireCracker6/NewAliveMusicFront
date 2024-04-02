@@ -260,6 +260,30 @@ input, textArea {
   color: #d22121;
 }
 
+.track-like-comment-button {
+  height: 20px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+.track-like-comment-button i {
+  cursor: pointer;
+  color: #fff;
+  font-size: 1.2em;
+}
+.track-like-comment-button i.liked {
+  color: #d22121;
+}
+.track-like-comment-button i:hover {
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  -webkit-transform: scale(1.3);
+          transform: scale(1.3);
+  color: #d22121;
+}
+
 .add-hide-comment-button {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -1416,6 +1440,46 @@ input[type=range]::-moz-range-thumb {
   margin-bottom: 10px;
 }
 
+.track-menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 80%;
+}
+.track-menu button {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-size: 14px;
+  width: 100%;
+  height: 30px;
+  margin: 0 10px;
+  border: none;
+  background-color: #475858;
+  color: rgb(72, 240, 226);
+  cursor: pointer;
+  outline: none;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+.track-menu button:hover {
+  -webkit-transform: scale(1.1);
+          transform: scale(1.1);
+  background-color: #5f7676;
+}
+
 .comments-form {
   -webkit-box-align: center;
       -ms-flex-align: center;
@@ -1518,14 +1582,60 @@ input[type=range]::-moz-range-thumb {
           align-items: center;
   margin-bottom: 10px;
 }
+@media (max-width: 768px) {
+  .comments-container .comment .profile-pic .username, .comments-container .comment .profile-pic .timestamp {
+    font-size: 12px;
+  }
+}
 .comments-container .comment .profile-pic img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
 }
+@media (max-width: 768px) {
+  .comments-container .comment .profile-pic img {
+    width: 25px;
+    height: 25px;
+  }
+}
 .comments-container .comment .comment-content {
   display: grid;
   margin: 0 0 10px 0;
+}
+.comments-container .comment .comment-content .comment-text {
+  color: #749093;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.comments-container .comment .comment-content .comment-likes {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin: 10px 0;
+}
+.comments-container .comment .comment-content .comment-likes .like-button {
+  background-color: #f0f0f0;
+  color: #749093;
+  border: none;
+  font-size: 12px;
+  padding: 10px;
+  cursor: pointer;
+}
+.comments-container .comment .comment-content .comment-likes .like-button:hover {
+  background-color: #9df3fd;
+  color: #69a2a9;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+.comments-container .comment .comment-content .comment-likes .likes {
+  color: #749093;
+  font-size: 12px;
 }
 .comments-container .comment .reply-button {
   background-color: #f0f0f0;
@@ -1563,6 +1673,163 @@ input[type=range]::-moz-range-thumb {
 
 .reply {
   padding-left: 20px;
+}
+@media (max-width: 768px) {
+  .reply {
+    padding-left: 10px;
+  }
+}
+
+.artisttrack-album-profile {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  width: 100%;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background-color: #1e2525;
+}
+.artisttrack-album-profile .artisttrack-album-header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 90%;
+  max-width: 1200px;
+  background-color: #1e2525;
+  color: #8eb0b0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: reverse;
+      -ms-flex-direction: row-reverse;
+          flex-direction: row-reverse;
+}
+.artisttrack-album-profile .artisttrack-album-header .coverimage {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  width: 30%;
+}
+.artisttrack-album-profile .artisttrack-album-header .coverimage img {
+  width: 100px;
+  height: 100px;
+  -webkit-filter: grayscale(50%);
+          filter: grayscale(50%);
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.artisttrack-album-profile .artisttrack-album-header .artist {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  width: 30%;
+}
+.artisttrack-album-profile .artisttrack-album-header .album {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 2%;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  width: 30%;
+}
+.artisttrack-album-profile .artisttrack-album-banner {
+  width: 100%;
+  height: 100px;
+}
+.artisttrack-album-profile .artisttrack-album-banner img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.artisttrack-album-profile .album-list-tracks {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  margin-top: 20px;
+  padding: 0;
+  list-style: none;
+}
+.artisttrack-album-profile .album-list-tracks h3 {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+.artisttrack-album-profile .artisttracks-album {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  width: 90%;
+  background-color: #1e2525;
+  margin: 20px 0;
+}
+.artisttrack-album-profile .artisttracks-album h3 {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 90%;
+  font-size: 1.5em;
+  margin-bottom: -25px;
+}
+.artisttrack-album-profile .artisttracks-album .likes-section {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin-top: -10px;
+  width: 90%;
 }
 
 * {

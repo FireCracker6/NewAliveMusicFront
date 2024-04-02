@@ -5,33 +5,51 @@ import axios from 'axios';
 interface JobInfoProps {
     jobId: string;
     apiKey: string;
+    trackUrl: string;
+    blobName: string;
 }
 
-const JobInfo: React.FC<JobInfoProps> = ({ jobId, apiKey }) => {
+const JobInfo: React.FC<JobInfoProps> = ({ jobId, apiKey, trackUrl, blobName }) => {
     const [jobInfo, setJobInfo] = useState<JobInfoProps | null>(null);
     const [resultData, setResultData] = useState<Segment[]>([]);
+    const [startMixingClicked, setStartMixingClicked] = useState(false);
+    const [status, setStatus] = useState('');
 
-    
     const replaceTrack = async (newFile: File, blobName: string) => {
         const formData = new FormData();
+        console.log('Replacing track...', formData, 'newFile', newFile, 'blobName', blobName);
         formData.append('newFile', newFile);
         formData.append('blobName', blobName);
 
         try {
-            const response = await axios.post('http://192.168.1.80:5053/api/Track/replaceTrack', formData);
+        await axios.post('http://192.168.1.80:5053/api/Track/replaceTrack', formData);
             console.log('Track replaced successfully');
-        } catch (error) {
-            console.error('An error occurred while replacing the track:', error);
+        } catch (error: any) {
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                // The request was made but no response was received
+                console.log(error.request);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log('Error', error.message);
+            }
+            console.log(error.config);
         }
     };
 
     const startMixing = async () => {
+        setStartMixingClicked(true);
         console.log('Starting mixing process...');
         const jobData = await axios.post('https://api.music.ai/api/job', {
             name: 'My mix job 1',
-            workflow: 'testmix',
+            workflow: 'MASTER',
             params: {
-                inputUrl: 'https://aliveprofile24.blob.core.windows.net/tracks/c78d03d4-2685-40cf-90bf-fd7b12c0d3aa.mp3', // Use trackUrl here
+                inputUrl: trackUrl,
                 outputFormat: 'mp3',
                 steps: [
                     {
@@ -53,7 +71,7 @@ const JobInfo: React.FC<JobInfoProps> = ({ jobId, apiKey }) => {
 
     const fetchJobInfo = async () => {
         console.log('Fetching job info...');
-        
+
         const response = await axios.get(`https://api.music.ai/api/job/${jobId}`, {
             headers: {
                 'Authorization': apiKey
@@ -62,45 +80,47 @@ const JobInfo: React.FC<JobInfoProps> = ({ jobId, apiKey }) => {
         const data = response.data;
         console.log('Job info:', data);
         setJobInfo(data);
-    
+
         if (data.status === 'SUCCEEDED' && data.result && data.result['Output 1']) {
             console.log('Fetching result data...');
             const resultUrl = data.result['Output 1'];
-            const proxyUrl = `http://192.168.1.80:3001/fetchData`; // Updated to use port 3001
-            const resultResponse = await axios.post(proxyUrl, { url: resultUrl });
-            console.log(resultResponse);
-            if (resultResponse.status !== 200) {
-                console.error(`Error fetching data: ${resultResponse.status} ${resultResponse.statusText}`);
+            const proxyUrl = `http://192.168.1.80:3001/fetchData`; // Use the new route
+            const response = await axios.post(proxyUrl, { url: resultUrl }, { responseType: 'blob' });
+            console.log(response.data);
+            const newFile = new File([response.data], 'newMix.mp3');
+            if (blobName) {
+                await replaceTrack(newFile, blobName);
+                setStatus('File replaced and uploaded successfully');
             } else {
-                const resultData = resultResponse.data;
-                console.log('Result data:', resultData);
-                setResultData(resultData);
-                console.log('resultUrl:', resultUrl)
-
-          // Download the new mix file
-      
-        const response = await axios.get(resultUrl, { responseType: 'blob' });
-        const newFile = new File([response.data], 'newMix.wav');
-
-        // Replace the track in Azure Blob Storage
-        const blobName = 'c78d03d4-2685-40cf-90bf-fd7b12c0d3aa.mp3'; // You need to get the blob name here
-        await replaceTrack(newFile, blobName);
+                console.error('blobName is not defined');
+                setStatus('Error: blobName is not defined');
             }
+            
         }
+
     };
 
     useEffect(() => {
-        fetchJobInfo();
-    }, [jobId, apiKey]);
+        if (startMixingClicked)
+            fetchJobInfo();
+    }, [jobId, apiKey, startMixingClicked]);
+
+    
 
     return (
         <div>
+            <button onClick={startMixing}>Start Mixing</button>
+            {status && (
+                <div>
+                    <h2>Status</h2>
+                    <p>{status}</p>
+                </div>
+            )}
             {jobInfo && (
                 <div>
                     <h2>Job Info</h2>
-                    <p>Status: {jobInfo.jobId}</p>
+                    <p>Job ID: {jobInfo.jobId}</p>
                     {/* Display other job info as needed */}
-                    <button onClick={startMixing}>Start Mixing</button>
                 </div>
             )}
             {resultData.length > 0 && <TrackInfo data={resultData} />}

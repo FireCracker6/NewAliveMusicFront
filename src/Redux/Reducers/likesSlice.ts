@@ -22,9 +22,16 @@ export const incrementLikesCount = createAction<{ trackID: number, count: number
 
 export const fetchLikesCount = createAsyncThunk(
   'likes/fetchLikesCount',
-  async (trackIds: number[]) => {
+  async (trackIds: number[], { rejectWithValue }) => {
+    // Filter out undefined values from trackIds
+    trackIds = trackIds.filter(trackId => trackId !== undefined);
+
+    if (!Array.isArray(trackIds) || trackIds.some(trackId => isNaN(trackId))) {
+      return rejectWithValue('Invalid trackIds');
+    }
     const likesCount: { [key: number]: number } = {}; // Declare likesCount with an index signature
     for (const trackId of trackIds) {
+      console.log(`Fetching likes count for trackId: ${trackId}`);
       const response = await axios.get(`http://192.168.1.80:5053/api/Likes/${trackId}/likescount`);
       likesCount[trackId] = response.data;
     }
@@ -34,7 +41,10 @@ export const fetchLikesCount = createAsyncThunk(
 
 export const fetchLikedTracks = createAsyncThunk(
   'likes/fetchLikedTracks',
-  async (userId: string) => {
+  async (userId: string, { rejectWithValue }) => {
+    if (!userId) {
+      return rejectWithValue('Invalid userId');
+    }
     const response = await axios.get(`http://192.168.1.80:5053/api/Likes/${userId}`);
     console.log('response from fetchLikedTracks', response.data.$values);
     return response.data;

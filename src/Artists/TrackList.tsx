@@ -16,13 +16,14 @@ import { addComment, fetchCommentsByTrackId } from '../Redux/Reducers/commentsSl
 import TrackCommentForm from './TrackCommentForm';
 import { useParams } from 'react-router-dom';
 import { fetchCommentsLikesCount, incrementCommentsLikesCount, updateCommentsLikesCount } from '../Redux/Reducers/commentsLikesSlice';
+import resolveJsonReferences from './Helpers/resolveJsonReferences';
 
 interface TrackListProps {
   artistId: number;
 }
 
 
-interface Track {
+ interface Track {
   artistName: string;
   trackID: number;
   jobID: string | null;
@@ -32,10 +33,11 @@ interface Track {
   lyrics: string | null;
   trackFilePath: string;
   albumID: number | null;
-  album: any;
+
   artistID: number;
   artist: Artist;
   likesCount: number;
+  album: Album;
 }
 
 interface Artist {
@@ -56,6 +58,17 @@ interface Comment {
   userPicturePath?: string;
   parentCommentID?: string;
   content: string;
+}
+
+interface Album {
+  albumID: number;
+  albumName: string;
+  releaseDate: string;
+  albumPicturePath: string;
+  artistPicturePath: string;
+  artistID: number;
+  artist: Artist;
+
 }
 
 const TracksList: React.FC = () => {
@@ -162,17 +175,21 @@ const TracksList: React.FC = () => {
   useEffect(() => {
     const fetchTracks = async () => {
       const response = await axios.get(`http://192.168.1.80:5053/api/Track/artist/${artistId}`);
-      setTracks(response.data.$values);
+      const data = resolveJsonReferences(response.data);
+      setTracks(data as Track[]);
       if (response.data.$values[0]) {
-        setArtistName(response.data.$values[0].artist.artistName);
-        setArtistPicturePath(response.data.$values[0].artist.artistPicturePath);
-        console.log('artist picture path:', response.data.$values[0].artist.artistPicturePath);
+        if (response.data.$values[0].album) {
+          setArtistName(response.data.$values[0].album.artist.artistName);
+          setArtistPicturePath(response.data.$values[0].album.artist.artistPicturePath);
+        } else {
+          setArtistName(response.data.$values[0].artist.artistName);
+          setArtistPicturePath(response.data.$values[0].artist.artistPicturePath);
+        }
       }
     };
-
+  
     fetchTracks();
-  }, []);
-
+  }, [artistId]);
 
 
 
@@ -293,9 +310,9 @@ const TracksList: React.FC = () => {
                       ? <i className="fa-solid fa-heart liked"></i>
                       : <i className="fa-solid fa-heart"></i>}
                   </button>
-                  {likesCountState[track.trackID] > 0 && <div>Likes: {likesCountState[track.trackID]}</div>}
+                  {likesCountState[Number(track.trackID)] > 0 && <div>Likes: {likesCountState[Number(track.trackID)]}</div>}
                 </div>
-                <button className='add-hide-comment-button ' onClick={() => setVisibleCommentFormTrackId(visibleCommentFormTrackId === track.trackID ? null : track.trackID)}>
+                <button className='add-hide-comment-button mt-2 mb-3' onClick={() => setVisibleCommentFormTrackId(visibleCommentFormTrackId === track.trackID ? null : track.trackID)}>
                 {visibleCommentFormTrackId === track.trackID ? 'Hide Comment Form' : <><span>Add a comment</span>&nbsp;<i className="fa-sharp fa-regular fa-comment-smile"></i></>}
                 </button>
                 {visibleCommentFormTrackId === track.trackID && showForm && <TrackCommentForm trackId={track.trackID} onCommentSubmit={handleCommentSubmit} onFormSubmit={handleFormSubmit} userId={userId} />}

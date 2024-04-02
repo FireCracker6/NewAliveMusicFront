@@ -55,7 +55,7 @@ export const likeComment = createAsyncThunk(
     export const fetchLikedComments = createAsyncThunk(
         'commentsLikes/fetchLikedComments',
         async (userId: string) => {
-            const response = await axios.get(`http://192.168.1.80:5053/api/CommentLikes/${userId}`);
+            const response = await axios.get(`http://192.168.1.80:5053/api/CommentLikes/getlikedcomments/${userId}`);
             console.log('response from fetchLikedComments', response.data.$values);
             return response.data;
         }
@@ -82,6 +82,7 @@ interface CommentsLikesState {
     likes: { [key: number]: number };
     likedComments: number[];
     commentsLikesCountState: { [key: number]: number };
+    loading: boolean;
 
 }
 const initialState: CommentsLikesState = {
@@ -90,11 +91,14 @@ const initialState: CommentsLikesState = {
     likes: {},
     likedComments: [],
     commentsLikesCountState: {},
+    loading: false,
+   
 }
 
 export const commentsLikesSlice = createSlice({
     name: 'commentsLikes',
     initialState,
+    
   
     reducers: {
       incrementCommentsLikesCount: (state, action: PayloadAction<{ commentId: number, count: number }>) => {
@@ -118,19 +122,19 @@ export const commentsLikesSlice = createSlice({
     extraReducers: (builder) => {
         builder
         .addCase(likeComment.fulfilled, (state, action) => {
-            const { commentId, likes } = action.payload;
-            const comment = findCommentInState(state.comments, commentId);
-            if (comment) {
-                comment.likes = likes;
-            }
-            // Add commentId to likedComments if it's not already there
-            if (!state.likedComments.includes(commentId as never)) {
-                state.likedComments.push(commentId as never);
-            }
-            state.commentsLikesCountState = {
-                ...state.commentsLikesCountState,
-                [action.payload.commentId]: ((state.commentsLikesCountState as Record<number, number>)[action.payload.commentId] ?? 0) + 1,
-            };
+          const { commentId, likes } = action.payload;
+          const comment = findCommentInState(state.comments, commentId);
+          if (comment) {
+            comment.likes = likes;
+          }
+          // Add commentId to likedComments if it's not already there
+          if (!state.likedComments.includes(commentId)) {
+            state.likedComments.push(commentId);
+          }
+          state.commentsLikesCountState = {
+            ...state.commentsLikesCountState,
+            [action.payload.commentId]: ((state.commentsLikesCountState as Record<number, number>)[action.payload.commentId] ?? 0) + 1,
+          };
         })
         .addCase(unlikeComment.fulfilled, (state, action) => {
             const { commentId, likes } = action.payload;
@@ -157,6 +161,17 @@ export const commentsLikesSlice = createSlice({
         .addCase(fetchCommentsLikesCount.fulfilled, (state, action: PayloadAction<{ [key: number]: number }>) => {
           state.commentsLikesCountState = {...state.commentsLikesCountState, ...action.payload};
         })
+
+        builder.addCase(fetchLikedComments.pending, (state) => {
+          state.loading = true;
+        });
+        builder.addCase(fetchLikedComments.fulfilled, (state, action) => {
+          state.likedComments = action.payload.$values.map((commentLike: any) => commentLike.commentID);
+          state.loading = false; // Set loading to false when the request is completed
+        });
+        builder.addCase(fetchLikedComments.rejected, (state) => {
+          state.loading = false; // Set loading to false if the request fails
+        });
         
 
         

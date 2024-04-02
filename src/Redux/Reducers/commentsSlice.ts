@@ -43,6 +43,9 @@ const initialState: CommentsState = {
 export const fetchCommentsByTrackId = createAsyncThunk(
   'comments/fetchCommentsByTrackId',
   async (trackId: any, { rejectWithValue, getState }) => {
+    if (isNaN(trackId) || trackId === undefined || trackId === null || trackId === '' || trackId === 0) {
+      return rejectWithValue('Invalid trackId');
+    }
     try {
       const response = await axios.get(`http://192.168.1.80:5053/api/Comments/track/${trackId}/comments`);
       const comments = response.data.$values;

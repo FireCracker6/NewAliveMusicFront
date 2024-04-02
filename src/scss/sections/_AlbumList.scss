@@ -1,0 +1,106 @@
+
+
+.artisttrack-album-profile {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    flex-direction: column;
+    align-items: center; // Added this line
+    background-color: #1e2525;
+
+    .artisttrack-album-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 90%;
+        max-width: 1200px;
+        background-color: #1e2525;
+        color: #8eb0b0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        flex-direction: row-reverse; // Added this line
+
+        .coverimage {
+            display: flex;
+            justify-content: flex-end;
+            width: 30%;
+          //  margin-right: 5%;
+
+            img {
+                width: 100px;
+                height: 100px;
+                filter: grayscale(50%);
+                object-fit: cover;
+            }
+        }
+        .artist {
+            display: flex;
+            justify-content: flex-start;
+            width: 30%;
+        }
+        .album {
+            display: flex;
+            padding-left: 2%;
+            justify-content: flex-start;
+            width: 30%;
+        }
+    }
+.artisttrack-album-banner {
+    width: 100%;
+    height: 100px; // adjust this to control the height of the banner
+//position: sticky;
+//top: 0;
+//z-index: 100;
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; // this will ensure the image covers the entire banner without distorting
+    }
+}
+.album-list-tracks {
+    h3 {
+        display: flex;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+    
+}
+.artisttracks-album {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  //  align-items: center;
+    width: 90%;
+  background-color: #1e2525;
+    margin: 20px 0;
+   // border: 1px solid white;
+
+   h3 {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    font-size: 1.5em;
+    margin-bottom: -25px;
+   
+   
+   }
+   .likes-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  margin-top: -10px;
+    
+   width: 90%;
+   // border: 1px solid white;
+}
+}
+}

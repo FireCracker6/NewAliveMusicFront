@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from 'react-dropzone';
+import { useParams } from "react-router-dom";
+
 function UploadTrackForm() {
     const [file, setFile] = useState<File | null>(null);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -11,7 +13,10 @@ function UploadTrackForm() {
     const [trackNumber, setTrackNumber] = useState('');
     const [lyrics, setLyrics] = useState('');
     //const [albumID, setAlbumID] = useState<number>(0);
-    const [artistID, setArtistID] = useState<number>(0);
+    const { artistId } = useParams<{ artistId: string }>();
+
+    const [composerNames, setComposerNames] = useState<string[]>([]);
+    const [lyricistNames, setLyricistNames] = useState<string[]>([]);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         setFile(acceptedFiles[0]);
@@ -19,29 +24,25 @@ function UploadTrackForm() {
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-
-    useEffect(() => {
-        setDuration('00:03:00');
-        setArtistID(2);
-
-        setTrackName('test');
-        setTrackNumber('1');
-    }, []);
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const formData = new FormData();
+        formData.append('ArtistID', artistId ?? '');
         formData.append('TrackFile', file as Blob);
         formData.append('TrackName', trackName);
         formData.append('Duration', duration);
         formData.append('TrackNumber', trackNumber);
 
-        // if (albumID !== 0) {
-        //     formData.append('AlbumID', albumID.toString());
-        // }
-        if (artistID !== 0) {
-            formData.append('ArtistID', artistID.toString());
-        }
+         // Append the composer and lyricist IDs to the form data
+         composerNames.forEach((name, index) => {
+            formData.append(`ComposerNames[${index}]`, name);
+        });
+        lyricistNames.forEach((name, index) => {
+            formData.append(`LyricistNames[${index}]`, name);
+        });
+
+      
         const config = {
             onUploadProgress: (progressEvent: any) => {
                 const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -94,14 +95,13 @@ function UploadTrackForm() {
     
         // Fetch the result from the URL in the response
         if (trackInfo.result && trackInfo.result['Output 1']) {
-            const resultResponse = await fetch(trackInfo.result['Output 1']);
-            if (!resultResponse.ok) {
-                console.error(`Error fetching data: ${resultResponse.status} ${resultResponse.statusText}`);
-            } else {
-                const resultData = await resultResponse.json();
-                console.log(resultData);
-            }
-            // Use the result data in your app
+            const resultResponse = await fetch('/fetchData', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ url: trackInfo.result['Output 1'] })
+            });
         
         } else {
             console.log('No result data found');
@@ -127,6 +127,19 @@ function UploadTrackForm() {
                             </div>
                             <div>
                                 {uploadProgress && <p>Upload progress: {uploadProgress}%</p>}
+                            </div>
+                            <div>
+                                <label>Track Title:</label>
+                                <input type="text" onChange={e => setTrackName(e.target.value)} />
+                            </div>
+                             {/* Add new input fields for composers and lyricists */}
+                             <div>
+                                <label>Composer(s) (comma-separated):</label>
+                                <input type="text" placeholder="(optional)" onChange={e => setComposerNames(e.target.value.split(','))} />
+                            </div>
+                            <div>
+                                <label>Lyricist(s) (comma-separated):</label>
+                                <input type="text" placeholder="(optional)" onChange={e => setLyricistNames(e.target.value.split(','))} />
                             </div>
                             <button type="submit" className="btn btn-primary">Upload</button>
                         </form>
