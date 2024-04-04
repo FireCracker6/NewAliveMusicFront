@@ -188,7 +188,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           if (userInfo) {
             await setUserWithLocalStorage(userInfo); // Store user data in localStorage
             console.log('userInfo:', userInfo);
-            console.log('user id from logn', userInfo.userId)
+            console.log('user id from login', userInfo.userId)
             dispatch(logIn({ userId: userId }));
          // Dispatch logIn action
           }

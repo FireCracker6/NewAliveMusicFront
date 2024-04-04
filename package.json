@@ -47,6 +47,7 @@
     "react-modal": "^3.16.1",
     "react-p5-wrapper": "^4.1.2",
     "react-redux": "^9.1.0",
+    "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.17.0",
     "react-scripts": "5.0.1",
     "react-select": "^5.8.0",

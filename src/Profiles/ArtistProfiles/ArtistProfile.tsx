@@ -17,7 +17,7 @@ const ArtistProfile = () => {
 
     useEffect(() => {
         const fetchProfile = async () => {
-            const response = await fetch(`http://192.168.1.80:5053/api/ArtistProfile/getartistprofile/${artistId}`);
+            const response = await fetch(`http://192.168.1.80:5053/api/ArtistProfile/getartistprofilebyartistid/${artistId}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

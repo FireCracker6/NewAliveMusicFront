@@ -1,5 +1,6 @@
 import axios from "axios";
-
+import { Carousel } from 'react-responsive-carousel';
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import Track from "../Track";
@@ -18,9 +19,8 @@ interface Album {
   };
   // Add other properties of the album here if needed
 }
-const AlbumsList = ({ artistID }: any) => {
+const AlbumsList = ({ artistID }: { artistID: number }) => {
   const [albums, setAlbums] = useState<Album[]>([]);
-  const { artistId } = useParams<{ artistId: string }>();
   const [currentTrackID, setCurrentTrackID] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -110,7 +110,7 @@ const AlbumsList = ({ artistID }: any) => {
   useEffect(() => {
     const fetchAlbums = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.80:5053/api/Album/getAlbumsByArtist/${artistId}`);
+        const response = await axios.get(`http://192.168.1.80:5053/api/Album/getAlbumsByArtist/${artistID}`);
         setAlbums(response.data.$values);
         console.log('Albums:', response.data.$values);
         console.log('A track from the first album:', albums[0]?.tracks.$values[0]);
@@ -124,8 +124,22 @@ const AlbumsList = ({ artistID }: any) => {
 
 
   return (
+    <>
+     <div className="container d-flex justify-content-center mb-4">
+      <Carousel showThumbs={false} showStatus={false} showIndicators={false} infiniteLoop useKeyboardArrows>
+  {albums.map((album: any) => (
+    <div className="artisttrack-album-profile" key={album.id}>
+      <div className="coverimage"> <img src={album.coverImagePath} alt={album.albumName} /></div>
+      <h2 className="album">{album.name}</h2>
+    </div>
+  ))}
+</Carousel>
+      </div>
+   
     <div className='mb-5 pb-5'>
+     
       <div className="container-fluid">
+     
         {albums.map((album: any) => {
           return (
             <div key={album.albumID} className="artisttrack-album-profile">
@@ -166,6 +180,7 @@ const AlbumsList = ({ artistID }: any) => {
         })}
       </div>
     </div>
+    </>
   );
 
 };

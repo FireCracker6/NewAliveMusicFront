@@ -42,6 +42,7 @@ import ArtistTracksList from './Artists/BackOffice/ArtistTrackList';
 import CreateAlbum from './Artists/BackOffice/CreateAlbum';
 import AlbumsList from './Artists/BackOffice/AlbumList';
 import SubscriptionForm from './Subscriptions/SubscriptionForm';
+import UserArtistProfile from './Profiles/UserArtistProfile';
 interface AuthCallbackProps {
   setUser: Dispatch<SetStateAction<User>>;
 }
@@ -190,6 +191,12 @@ function App() {
           </RoleCheck>
         } />
 
+<Route path='/getuserartistprofile' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <UserArtistProfile />
+          </RoleCheck>
+        } />
+
 <Route path='/uploadTrack/:artistId' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <UploadTrackForm />
@@ -215,11 +222,11 @@ function App() {
           </RoleCheck>
         } />
 
-<Route path='/albumlist/:artistId' element={
+{/* <Route path='/albumlist/:artistId' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <AlbumsList />
           </RoleCheck>
-        } />
+        } /> */}
 
 <Route path='/create-album/:artistId' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
