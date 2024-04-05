@@ -43,6 +43,7 @@ import CreateAlbum from './Artists/BackOffice/CreateAlbum';
 import AlbumsList from './Artists/BackOffice/AlbumList';
 import SubscriptionForm from './Subscriptions/SubscriptionForm';
 import UserArtistProfile from './Profiles/UserArtistProfile';
+import LatestTracks from './Generic/LatestTracks';
 interface AuthCallbackProps {
   setUser: Dispatch<SetStateAction<User>>;
 }
@@ -197,18 +198,14 @@ function App() {
           </RoleCheck>
         } />
 
-<Route path='/uploadTrack/:artistId' element={
+<Route path='/uploadTrack' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <UploadTrackForm />
           </RoleCheck>
         } />
 
 
-{/* <Route path='/jobinfo' element={
-          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
-            <JobInfo jobId='3da13b83-de45-4838-a44d-f5f0d2bfa284' apiKey='2555cad4-34a6-427a-a2e8-965f848f69fc' />
-          </RoleCheck>
-        } /> */}
+
 
 <Route path='/tracklist/:artistId' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
@@ -216,7 +213,7 @@ function App() {
           </RoleCheck>
         } />
 
-<Route path='/artist-tracklist/:artistId' element={
+<Route path='/artist-tracklist' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <ArtistTracksList />
           </RoleCheck>
@@ -228,7 +225,7 @@ function App() {
           </RoleCheck>
         } /> */}
 
-<Route path='/create-album/:artistId' element={
+<Route path='/create-album' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <CreateAlbum />
           </RoleCheck>
@@ -242,6 +239,12 @@ function App() {
 <Route path='/subscription' element={
           <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
             <SubscriptionForm />
+          </RoleCheck>
+        } />
+
+<Route path='/latesttracks' element={
+          <RoleCheck roles={['Admin', 'Manager', 'Employee', 'SubscribingMember', 'NonPayingMember']}>
+            <LatestTracks />
           </RoleCheck>
         } />
 

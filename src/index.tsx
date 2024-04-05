@@ -10,6 +10,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from './Redux/store';
 import store from './Redux/store';
+import { UserSubscriptionProvider } from './Contexts/UserSubscriptionContext';
 
 // Create a Redux store with the rootReducer
 
@@ -26,7 +27,9 @@ root.render(
   <BrowserRouter>
    <Provider store={store}>
      <UserProvider>
+      <UserSubscriptionProvider>
     <App />
+    </UserSubscriptionProvider>
     </UserProvider>
     </Provider>
   </BrowserRouter>

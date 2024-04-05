@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import { isAuthenticated } from '../../Authentication/IsTokenValid';
 import { useDispatch } from 'react-redux';
 import AvatarEditor from 'react-avatar-editor';
+import { useUserSubscription } from '../../Contexts/UserSubscriptionContext';
 
 interface Tracks {
     artistName: string;
@@ -29,7 +30,8 @@ interface Tracks {
     coverImagePath: string;
   }
   const CreateAlbum: React.FC = () => {
-    const { artistId } = useParams<{ artistId: string }>();
+    const { userSubscription } = useUserSubscription();
+    const artistId = userSubscription?.artists?.$values[0]?.artistID;
     const [tracks, setTracks] = useState([]);
     const [selectedTracks, setSelectedTracks] = useState<Tracks[]>([]);
     const [albumName, setAlbumName] = useState('');

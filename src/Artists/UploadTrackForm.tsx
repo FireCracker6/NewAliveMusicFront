@@ -1,9 +1,14 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useDropzone } from 'react-dropzone';
 import { useParams } from "react-router-dom";
+import { isAuthenticated } from "../Authentication/IsTokenValid";
+import { jwtDecode } from "jwt-decode";
+import UserContext from "../Contexts/UserContext";
+import { useUserSubscription } from "../Contexts/UserSubscriptionContext";
 
 function UploadTrackForm() {
+    const { userSubscription } = useUserSubscription();
     const [file, setFile] = useState<File | null>(null);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
     const [trackUrl, setTrackUrl] = useState<string | null>(null);
@@ -13,14 +18,23 @@ function UploadTrackForm() {
     const [trackNumber, setTrackNumber] = useState('');
     const [lyrics, setLyrics] = useState('');
     //const [albumID, setAlbumID] = useState<number>(0);
-    const { artistId } = useParams<{ artistId: string }>();
-
+    const artistId = userSubscription?.artists?.$values[0]?.artistID;
+    const [userId, setUserId] = useState<string | undefined>(undefined);
     const [composerNames, setComposerNames] = useState<string[]>([]);
     const [lyricistNames, setLyricistNames] = useState<string[]>([]);
-
+    const { user } = useContext(UserContext);
     const onDrop = useCallback((acceptedFiles: File[]) => {
         setFile(acceptedFiles[0]);
     }, []);
+
+    useEffect(() => {
+        const token = localStorage.getItem('userJWTToken');
+        if (isAuthenticated()) {
+          const decodedToken: any = jwtDecode(token ?? '');
+          setUserId(decodedToken.nameid);
+          console.log('User ID:', userId);
+        }
+      }, [ user]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -28,6 +42,7 @@ function UploadTrackForm() {
         event.preventDefault();
 
         const formData = new FormData();
+        formData.append('UserID', userId ?? '')
         formData.append('ArtistID', artistId ?? '');
         formData.append('TrackFile', file as Blob);
         formData.append('TrackName', trackName);

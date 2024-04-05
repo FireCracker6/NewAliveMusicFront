@@ -4,6 +4,7 @@ import axios from 'axios';
 import Track from '../Track';
 import resolveJsonReferences from '../Helpers/resolveJsonReferences';
 import TrackMenu from './TrackMenu';
+import { useUserSubscription } from '../../Contexts/UserSubscriptionContext';
 interface Track {
     artistName: string;
     trackID: number;
@@ -26,11 +27,13 @@ interface Track {
     artistPicturePath: string;
   }
 const ArtistTracksList: React.FC = () => {
-  const { artistId } = useParams<{ artistId: string }>();
+  const { userSubscription } = useUserSubscription();
+  const artistId = userSubscription?.artists?.$values[0]?.artistID;
   const [tracks, setTracks] = useState<Track[]>([]);
   const [artistName, setArtistName] = useState<string | null>(null);
   const [artistPicturePath, setArtistPicturePath] = useState<string | null>(null);
   const [blobName, setBlobName] = useState<string | null>(null);
+
 
   
   const removeTrackById = (id: any) => {
