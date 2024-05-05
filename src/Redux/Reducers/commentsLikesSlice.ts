@@ -43,7 +43,7 @@ export const likeComment = createAsyncThunk(
       }
     
       const likesCount: { [key: number]: number } = await response.json();
-      console.log('Comment Likes count:', likesCount);
+      //console.log('Comment Likes count:', likesCount);
       return likesCount;
     } catch (error: any) {
       console.error('Error fetching likes count:', error);

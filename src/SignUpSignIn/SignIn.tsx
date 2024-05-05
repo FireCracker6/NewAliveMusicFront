@@ -7,13 +7,15 @@ import axios from 'axios';
 import GoogleAuthButton from './GoogleSignInButton';
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
-import  UserContext  from '../Contexts/UserContext';
+import UserContext from '../Contexts/UserContext';
 import { fetchUserInfo } from './fetchUserInfo';
 import PasswordResetRequestForm from './PasswordResetRequestForm';
 import { CustomJwtPayload } from './AuthCallBack';
 import Modal from 'react-modal';
 import { useDispatch } from "react-redux";
 import { logIn } from "../Redux/Reducers/sessionReducer";
+import { useUserSubscription } from "../Contexts/UserSubscriptionContext";
+import { fetchUserSubscription } from "./fetchUserSubscription";
 
 interface SignInProps {
     isModal: boolean;
@@ -23,7 +25,7 @@ interface SignInProps {
 
 
 
-  
+
 
 declare global {
     interface Window {
@@ -34,23 +36,23 @@ declare global {
 
 const customStyles = {
     content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      backgroundColor: 'white',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-      border: '1px solid #ccc',
-      borderRadius: '5px',
-      boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-      width: '80%', 
-      maxWidth: '500px', 
-      padding: '20px',
-      overflowY: "scroll" as "scroll",
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        backgroundColor: 'white',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+        width: '80%',
+        maxWidth: '500px',
+        padding: '20px',
+        overflowY: "scroll" as "scroll",
     },
     overlay: {
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
 };
 
@@ -58,7 +60,7 @@ const SignIn: React.FC<SignInProps> = ({ isModal, closeModal, changeModalContent
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [rememberme, setrememberme] = useState(false);
-    
+
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const userContext = useContext(UserContext);
@@ -71,16 +73,16 @@ const SignIn: React.FC<SignInProps> = ({ isModal, closeModal, changeModalContent
     const dispatch = useDispatch();
 
     if (!userContext) {
-      throw new Error('SignIn must be used within UserProvider');
+        throw new Error('SignIn must be used within UserProvider');
     }
-    const { setUser } = userContext; 
-  const navigate = useNavigate();
-  const handleForgotPasswordClick = () => {
-    changeModalContent("passwordReset");
-  };
-    
+    const { setUser } = userContext;
+    const navigate = useNavigate();
+    const handleForgotPasswordClick = () => {
+        changeModalContent("passwordReset");
+    };
+
     const isEmailValid = (email: string) => {
-        const emailRegex =  /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
         return emailRegex.test(email);
     };
 
@@ -101,7 +103,7 @@ const SignIn: React.FC<SignInProps> = ({ isModal, closeModal, changeModalContent
         setPassword(value);
         if (!value) {
             setPasswordError("Password is required");
-        } else if (value.length < 8 ) {
+        } else if (value.length < 8) {
             setPasswordError("Password should be at least 8 characters");
         } else {
             setPasswordError("");
@@ -112,104 +114,113 @@ const SignIn: React.FC<SignInProps> = ({ isModal, closeModal, changeModalContent
         email,
         password,
         rememberme,
-      };
-      const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    };
+    const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setrememberme(e.target.checked);
     };
 
- // Google Signup
+    // Google Signup
 
 
-const startGoogleOneTap = () => {
-    if (window.google && window.google.accounts.id) {
-        window.google.accounts.id.prompt();
-    } else {
-        console.error("Google One Tap library not loaded.");
-    }
-};
-useEffect(() => {
-    loadGoogleScript(() => {
-        (window.google.accounts.id as any).initialize({
-            client_id: '239924498555-ttk9cn2eg5j31kh85jdgidu1gm1qbhpo.apps.googleusercontent.com',
-         //   callback: handleGoogleResponse
+    const startGoogleOneTap = () => {
+        if (window.google && window.google.accounts.id) {
+            window.google.accounts.id.prompt();
+        } else {
+            console.error("Google One Tap library not loaded.");
+        }
+    };
+    useEffect(() => {
+        loadGoogleScript(() => {
+            (window.google.accounts.id as any).initialize({
+                client_id: '239924498555-ttk9cn2eg5j31kh85jdgidu1gm1qbhpo.apps.googleusercontent.com',
+                //   callback: handleGoogleResponse
+            });
+            console.log("Google Script Loaded.");
+            // Prompting the user after initialization
+            startGoogleOneTap();
         });
-        console.log("Google Script Loaded.");
-        // Prompting the user after initialization
-        startGoogleOneTap();
-    });
-}, []);
+    }, []);
 
 
 
 
 
 
-const loadGoogleScript = (callback: ((this: GlobalEventHandlers, ev: Event) => any) | null) => {
-    const script = document.createElement("script");
-    //script.defer = true
-    script.referrerPolicy = "same-origin-allow-popups"
-    script.src = "https://accounts.google.com/gsi/client";
-    
-    script.onload = callback;
-    document.body.appendChild(script);
-};
+    const loadGoogleScript = (callback: ((this: GlobalEventHandlers, ev: Event) => any) | null) => {
+        const script = document.createElement("script");
+        //script.defer = true
+        script.referrerPolicy = "same-origin-allow-popups"
+        script.src = "https://accounts.google.com/gsi/client";
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  
-    if (emailError || passwordError) {
-      console.error("Validation errors present");
-      console.log(emailError, passwordError);
-  
-      return;
-    }
-    
-    try {
-      // Call your API endpoint for sign-in
-      const response = await axios.post('http://192.168.1.80:5053/api/users/login', {
-        email: email,
-        password: password,
-        rememberme: rememberme 
-      });
-    
-      if (response.status === 200) {
-        const { token, refreshToken, userId } = response.data; // Corrected token access
+        script.onload = callback;
+        document.body.appendChild(script);
+    };
 
-        if (typeof token !== 'string' || typeof refreshToken !== 'string') {
-          console.error('Token or refresh token is not a string:', token, refreshToken);
-          return;
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (emailError || passwordError) {
+            console.error("Validation errors present");
+            console.log(emailError, passwordError);
+
+            return;
         }
-      
-        // Store tokens in local storage
-        localStorage.setItem('userJWTToken', token);
-        localStorage.setItem('refreshToken', refreshToken);
+
         try {
-          const userInfo = await fetchUserInfo(token);
-          if (userInfo) {
-            await setUserWithLocalStorage(userInfo); // Store user data in localStorage
-            console.log('userInfo:', userInfo);
-            console.log('user id from login', userInfo.userId)
-            dispatch(logIn({ userId: userId }));
-         // Dispatch logIn action
-          }
+            // Call your API endpoint for sign-in
+            const response = await axios.post('http://192.168.1.80:5053/api/users/login', {
+                email: email,
+                password: password,
+                rememberme: rememberme
+            });
+
+            if (response.status === 200) {
+                const { token, refreshToken } = response.data;
+              
+                if (typeof token !== 'string' || typeof refreshToken !== 'string') {
+                  console.error('Token or refresh token is not a string:', token, refreshToken);
+                  return;
+                }
+              
+                // Decode the token to get the userId
+                const decodedToken = jwtDecode<CustomJwtPayload>(token);
+                const userId = decodedToken.nameid;
+              
+                // Store tokens in local storage
+                localStorage.setItem('userJWTToken', token);
+                localStorage.setItem('refreshToken', refreshToken);
+                try {
+                  const userInfo = await fetchUserInfo(token);
+                  if (userInfo) {
+                    userInfo.userId = userId;
+                    await setUserWithLocalStorage(userInfo); // Store user data in localStorage
+                    console.log('userInfo:', userInfo);
+                    console.log('user id from login', userInfo.userId)
+                    dispatch(logIn({ userId: userId }));
+              
+                    // Fetch user subscription
+                    const userSubscription = await fetchUserSubscription(userId, token, dispatch);
+                    if (userSubscription) {
+                        localStorage.setItem('userSubscription', JSON.stringify(userSubscription));
+              
+                      // Navigate to dashboard after user and subscription data are fetched
+                      navigate('/dashboard');
+                    }
+                    closeModal();
+                  }
+                } catch (error) {
+                  console.error("Error fetching user info:", error);
+                }
+              }
         } catch (error) {
-          console.error("Error fetching user info:", error);
+            console.error("An error occurred during the login process", error);
         }
-    
-        // Close the modal after successful login
-        closeModal();
-        
-        navigate('/dashboard');
-      }
-    } catch (error) {
-      console.error("An error occurred during the login process", error);
     }
-  }
 
     return (
         <>
             <Modal isOpen={isModal} onRequestClose={closeModal} style={customStyles}>
-            <button onClick={closeModal} className="modal-close-button">X</button>
+                <button onClick={closeModal} className="modal-close-button">X</button>
                 <div className="sign-up-container">
                     <form className="sign-up-form" onSubmit={handleSubmit}>
                         <div className='container py-4 d-flex justify-content-center'>
@@ -218,16 +229,16 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                         <div className="mb-3 position-relative">
                             <label htmlFor="email" className="form-label-top">Email</label>
                             <input
-                        type="email"
-                        className="form-control"
-                        id="email"
-                        value={email}
-                        onChange={handleEmailChange}
-                        aria-describedby="emailHelp"
-                    />
-                    {emailError && <span className="text-danger">{emailError}</span>}
+                                type="email"
+                                className="form-control"
+                                id="email"
+                                value={email}
+                                onChange={handleEmailChange}
+                                aria-describedby="emailHelp"
+                            />
+                            {emailError && <span className="text-danger">{emailError}</span>}
                             <FontAwesomeIcon icon={faEnvelope} className="icon-right" />
-                            
+
                         </div>
                         <div className="mb-3 position-relative">
                             <label htmlFor="password" className="form-label-top">Password</label>
@@ -242,50 +253,50 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                             {passwordError && <span className="text-danger">{passwordError}</span>}
 
                             <FontAwesomeIcon icon={faLock} className="icon-right" />
-                        
+
                         </div>
                         <div className="remember-me mb-3 position-relative">
-                       
-                        <input type="checkbox" 
-                        className='me-1'
-                         id="rememberme"
-                          name="rememberme"
-                          value="RememberMe"
-                          checked={rememberme}
-                          onChange={handleRememberMeChange}
 
-                           />
-                        <label htmlFor="rememberme" className=' form-lable-top'>Remember Me</label>
+                            <input type="checkbox"
+                                className='me-1'
+                                id="rememberme"
+                                name="rememberme"
+                                value="RememberMe"
+                                checked={rememberme}
+                                onChange={handleRememberMeChange}
+
+                            />
+                            <label htmlFor="rememberme" className=' form-lable-top'>Remember Me</label>
                         </div>
-                       
-                            <div className='d-grid'>
-                                <button type="submit" className="btn btn-secondary">Login to Alive!</button>
-                            </div>
-                            <div className='remember-me d-flex justify-content-center mt-2'>
-  
-  
-    <button type="button" className='forgot-pwd-button ' onClick={handleForgotPasswordClick}>Forgot Password?</button>
+
+                        <div className='d-grid'>
+                            <button type="submit" className="btn btn-secondary">Login to Alive!</button>
+                        </div>
+                        <div className='remember-me d-flex justify-content-center mt-2'>
 
 
-</div>
+                            <button type="button" className='forgot-pwd-button ' onClick={handleForgotPasswordClick}>Forgot Password?</button>
 
 
-                                            {/*Sign up with google */}
-                                           
+                        </div>
+
+
+                        {/*Sign up with google */}
+
                     </form>
-                   <div className='container d-flex justify-content-center py-2'>
-                   <GoogleAuthButton 
-                    clientId="239924498555-ttk9cn2eg5j31kh85jdgidu1gm1qbhpo.apps.googleusercontent.com"
-                    redirectUri="http://localhost:3000/auth/callback"
-                    scope="profile email"
-                    onStartGoogleOneTap={startGoogleOneTap}
-                    actionType='signIn'
-                    
+                    <div className='container d-flex justify-content-center py-2'>
+                        <GoogleAuthButton
+                            clientId="239924498555-ttk9cn2eg5j31kh85jdgidu1gm1qbhpo.apps.googleusercontent.com"
+                            redirectUri="http://localhost:3000/auth/callback"
+                            scope="profile email"
+                            onStartGoogleOneTap={startGoogleOneTap}
+                            actionType='signIn'
 
-                     />
 
-                   </div>
-                
+                        />
+
+                    </div>
+
                 </div>
             </Modal>
         </>

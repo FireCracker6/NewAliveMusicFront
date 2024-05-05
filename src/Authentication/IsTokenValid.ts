@@ -22,3 +22,7 @@ export const isAuthenticated = (): boolean => {
   console.log('token from isAuthenticated', token);
   return !!token && isTokenValid(token);
 };
+export const isAuthenticated2 = (): string | null => {
+  const token = localStorage.getItem('userJWTToken');
+  return isTokenValid(token ?? '') ? token : null;
+};

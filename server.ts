@@ -112,7 +112,7 @@ wss.on('connection', ws => {
         // Log likes count for each comment
         for (const commentId in commentslikesCount) {
           if (commentslikesCount.hasOwnProperty(commentId)) {
-            console.log(`Likes count for comment ${commentId} in track ${trackId}:`, commentslikesCount[commentId]);
+         //   console.log(`Likes count for comment ${commentId} in track ${trackId}:`, commentslikesCount[commentId]);
           }
         }
       } catch (error) {

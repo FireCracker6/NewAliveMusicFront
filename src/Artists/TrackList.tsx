@@ -133,7 +133,7 @@ const TracksList: React.FC = () => {
           const data = JSON.parse(event.data);
           console.log('Received data:', data); // Log the received data
   
-          const { trackId, likesCount, comments } = data; // Change 'comment' to 'comments'
+          const { trackId, likesCount, comments } = data; 
   
           const trackID = trackId || data.TrackId || data.TrackID;
           const likes = likesCount || data.LikesCount || data.likesCount;
@@ -154,7 +154,7 @@ const TracksList: React.FC = () => {
              dispatch(updateCommentsLikesCount({ commentId, likesCount: likes }));
             });
           } else {
-            console.log('No comment in data'); // Log when there's no comment
+            console.log('No comment in data'); 
           }
   
         } catch (error) {
@@ -197,8 +197,7 @@ const TracksList: React.FC = () => {
     const token = localStorage.getItem('userJWTToken');
     if (isAuthenticated()) {
       const decodedToken: any = jwtDecode(token ?? '');
-      setUserId(decodedToken.nameid); // Change this line
-      //   console.log('userid from tracklist', userId)
+      setUserId(decodedToken.nameid); 
 
     }
   }, [dispatch, user]);

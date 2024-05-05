@@ -10,6 +10,9 @@ import { fetchUserInfo } from "../SignUpSignIn/fetchUserInfo";
 import { User } from "../SignUpSignIn/types";
 import { useDispatch, useSelector } from 'react-redux';
 import { logIn, logOut } from '../Redux/Reducers/sessionReducer';
+import { useUserSubscription } from '../Contexts/UserSubscriptionContext';
+import { UserSubscriptionDTO } from '../Dashboard/Dashboard';
+import { fetchUserSubscription } from '../SignUpSignIn/fetchUserSubscription';
 
 interface NavbarProps {
   openModal: () => void;
@@ -19,7 +22,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ openModal, openSignInModal }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
- 
+  const { userSubscription, trackCount } = useUserSubscription();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement | null>(null);
  // const { user } = useContext(UserContext);
@@ -28,42 +31,45 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openSignInModal }) => {
   const imageRef = useRef<HTMLDivElement>(null);
   const userEmail = user?.email;
   const navigate = useNavigate();
-
+  const [localUserSubscription, setLocalUserSubscription] = useState<UserSubscriptionDTO | null>(null);
   const dispatch = useDispatch();
-
+  const [subscriptionUpdated, setSubscriptionUpdated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  console.log('userSubscription form dashboard', userSubscription);
   const authStatus = useSelector((state: any) => state.session.authStatus);
+  const token = localStorage.getItem('userJWTToken');
 
-// ...
+  console.log('token from global navbar', token); 
 
 useEffect(() => {
-  const token = localStorage.getItem('userJWTToken');
-  console.log(token)
-
   const fetchUserAndProfile = async () => {
+    const token = localStorage.getItem('userJWTToken');
     if (token) {
       const fetchedUser = await fetchUserInfo(token);
       if (fetchedUser) {
-        // Decode the token to get the userId
         const decodedToken: any = jwtDecode(token);
         const userId = decodedToken.nameid;
-
-        // Fetch user profile
         const profileResponse = await fetch(`http://192.168.1.80:5053/api/Profile/${userId}`);
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
           fetchedUser.profilePicturePath = profileData.profilePicturePath;
-        } else {
-          console.error('Failed to fetch user profile:', profileResponse.status);
         }
         setUser(fetchedUser);
-        console.log('userid from dashboard', userId)
-        // dispatch(logIn({ userId: userId }));
+        setLoading(false);
+        const updatedSubscription = await fetchUserSubscription(userId, token, dispatch);
+        if (updatedSubscription) {
+          localStorage.setItem('userSubscription', JSON.stringify(updatedSubscription));
+          setLocalUserSubscription(updatedSubscription);
+          console.log('local user subscription', localUserSubscription)
+          setSubscriptionUpdated(true);
+        }
+        return fetchedUser;
       }
     }
   };
 
   fetchUserAndProfile();
-}, [authStatus]);
+}, [authStatus, token]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -112,6 +118,7 @@ useEffect(() => {
       localStorage.removeItem('userEmail');
       localStorage.removeItem('roles');
       localStorage.removeItem('userFullName');
+      localStorage.removeItem('token');
       dispatch(logOut());
   
       navigate('/', { replace: true }); // Redirect to home 

@@ -67,7 +67,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('email', user.email || '');
         localStorage.setItem('roles', JSON.stringify(user.roles) || ''); // Store roles in localStorage
         localStorage.setItem('userFullName', user.fullName || '');
-        
+        localStorage.setItem('userId', user.userId || '');
+              // Decode the token to get the userId
+      const decodedToken: any = jwtDecode(user.token);
+      const userId = decodedToken.nameid;
+
+      localStorage.setItem('userId', userId || '');
       } else {
      //   localStorage.removeItem('userToken');
        // localStorage.removeItem('userEmail');
@@ -111,40 +116,38 @@ const setUserSafely = (newUser: any) => {
     setLoading(false);
   };
 
-useEffect(() => {
-  const loadUserFromLocalStorage = async () => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        // Only attempt to decode if the token is in the expected format
-        if (token.split('.').length === 3) {
-          const decoded = jwtDecode<CustomJwtPayload>(token);
-          setUser((prevUser: User | null) => ({
-            ...prevUser,
-            fullName: decoded.name,
-            email: decoded.email,
-            roles: decoded.roles,
-            token: token,
-            // contactId: decoded.contactId,
-            isAuthorized: true,
-          }));
-          // Fetch user data after setting the user
-          await fetchUserData();
-        } else {
-          console.error('Invalid token format');
-          // Here you could also clear the token from localStorage if desired
-          localStorage.removeItem('token');
+  useEffect(() => {
+    const loadUserFromLocalStorage = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          if (token.split('.').length === 3) {
+            const decoded = jwtDecode<CustomJwtPayload>(token);
+            setUser((prevUser: User | null) => ({
+              ...prevUser,
+              fullName: decoded.name,
+              email: decoded.email,
+              roles: decoded.roles,
+              token: token,
+              isAuthorized: true,
+            }));
+            if (!user?.fullName || !user?.roles) {
+              // Only fetch user data if fullName or roles are not set
+              await fetchUserData();
+            }
+          } else {
+            console.error('Invalid token format');
+            localStorage.removeItem('token');
+          }
+        } catch (error) {
+          console.error('Invalid token', error);
         }
-      } catch (error) {
-        console.error('Invalid token', error);
-        // Handle the invalid token case here, like logging out the user
       }
-    }
-    setLoading(false);
-  };
-
-  loadUserFromLocalStorage();
-}, []);
+      setLoading(false);
+    };
+  
+    loadUserFromLocalStorage();
+  }, []);
 
  
 

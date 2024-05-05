@@ -178,7 +178,7 @@ input, textArea {
   transition: all 0.3s ease-in-out;
 
   &:hover {
-    background-color: lighten(#3d72b3, 20%);
+    background-color: darken(#3868a2, 20%);
   }
 }
 .reply-submit {

@@ -67,17 +67,6 @@ function App() {
   };
 
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem('userJWTToken');
-  //   if (token) {
-  //     fetchUserInfo(token);
-  //   }
-  // }, []);
-
-
-
-
-
   const [modalContent, setModalContent] = useState("signIn");
 
   const openSignInModal = () => {
@@ -99,7 +88,8 @@ function App() {
   const handleForgotPasswordClick = () => {
     setModalContent("signIn");
   };
-  { isModalOpen && <SignUp isModal={isModalOpen} closeModal={closeModal} /> }
+
+  {isModalOpen && <SignUp isModal={isModalOpen} closeModal={closeModal} openSignInModal={openSignInModal} />}
 
 
 
@@ -114,7 +104,7 @@ function App() {
           openModal={() => setIsModalOpen(true)}
           openSignInModal={() => setIsModalSignInOpen(true)}
         />
-        {isModalOpen && <SignUp isModal={isModalOpen} closeModal={closeModal} />}
+      {isModalOpen && <SignUp isModal={isModalOpen} closeModal={closeModal} openSignInModal={openSignInModal} />}
         {isModalSignInOpen && (
           modalContent === "signIn" ? (
             <SignIn
@@ -142,6 +132,7 @@ function App() {
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<PrivateRoute component={Dashboard} />} />
+      
 
 
         <Route path='/create-profile' element={

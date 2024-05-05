@@ -1,0 +1,72 @@
+.latest-tracks {
+    display: grid;
+    justify-content: center;
+    .main-header {
+        display: flex;
+        justify-content: center;
+        background-color: white;
+      width: 100%;
+
+    }
+    .card {
+        border-radius: 0 !important;
+        padding-bottom: 20px;
+        .card-img-top {
+            max-height: 200px;
+                overflow: hidden;
+                object-fit:cover;
+               object-position: center;
+          
+        }
+        button {
+            font-size: 0.8em;
+            border-radius: 0 !important;
+            .btn  {
+                border-radius: none;
+            }
+        }
+    }
+}
+.albums {
+    background-color: #242427;
+}
+.playlist {
+
+    .header {
+        background-color: #fff;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      
+    }
+   
+
+ 
+
+    display: flex;
+    flex-direction: column;
+   
+    justify-content: center !important;
+    align-items: center;
+
+    .tracks {
+        display: flex;
+        flex-direction: column;
+       width: 100%;
+        justify-content: center !important;
+        align-items: center;
+        background-color: #d0dadb;
+
+        .artisttracks {
+            display: flex;
+            justify-content: space-between;
+           
+        }
+    }
+
+
+}
+
+
+    
