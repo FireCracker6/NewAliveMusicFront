@@ -59,9 +59,19 @@ const Dashboard: React.FC = () => {
   const [subscriptionPlanID, setSubscriptionPlanID] = useState(2);
   const [message, setMessage] = useState('');
   const [isUpdateSuccessful, setIsUpdateSuccessful] = useState(false);
-
+  const [isDowngrading, setIsDowngrading] = useState(false);
 
   const [userId, setUserId] = useState<string | undefined>(undefined);
+
+
+
+  useEffect(() => {
+    console.log(message);
+  }, [message]);
+
+
+
+
   useEffect(() => {
     // This code will run whenever userSubscription changes
     console.log(userSubscription);
@@ -79,7 +89,7 @@ const Dashboard: React.FC = () => {
         }
       }
     };
-  
+
     fetchUserAndProfile();
   }, [userSubscription]);
 
@@ -91,25 +101,25 @@ const Dashboard: React.FC = () => {
         const decodedToken: any = jwtDecode(token);
         setUserId(decodedToken.nameid);
         console.log('userId from dashboard useEffect', decodedToken.nameid);
-     
-    const updatedSubscription = await fetchUserSubscription(userId ?? '', token, dispatch);
-    console.log('updatedSubscription', updatedSubscription);
-    if (updatedSubscription) {
-      localStorage.setItem('userSubscription', JSON.stringify(updatedSubscription));
-      setLocalUserSubscription(updatedSubscription);
-      dispatch(userSubscriptionSlice.actions.setUserSubscription(updatedSubscription));
 
-      console.log('local user subscription', localUserSubscription)
-      setSubscriptionUpdated(true);
+        const updatedSubscription = await fetchUserSubscription(userId ?? '', token, dispatch);
+        console.log('updatedSubscription', updatedSubscription);
+        if (updatedSubscription) {
+          localStorage.setItem('userSubscription', JSON.stringify(updatedSubscription));
+          setLocalUserSubscription(updatedSubscription);
+          dispatch(userSubscriptionSlice.actions.setUserSubscription(updatedSubscription));
+
+          console.log('local user subscription', localUserSubscription)
+          setSubscriptionUpdated(true);
+        }
+      }
     }
+
+    useEffect(() => {
+      GetSubscription();
+    }, [subscriptionUpdated]);
+
   }
-}
-
-useEffect(() => {
-  GetSubscription();
-}, [subscriptionUpdated]);
-
-}
 
   useEffect(() => {
     const fetchProfileAndSubscription = async (userId: string) => {
@@ -128,7 +138,7 @@ useEffect(() => {
           }
           setUser(fetchedUser);
           setLoading(false);
-         
+
           return fetchedUser;
         }
       }
@@ -137,16 +147,16 @@ useEffect(() => {
     const fetchData = async () => {
       if (userId) {
         const response = await fetchProfileAndSubscription(userId);
-        if (response !== undefined ) {
+        if (response !== undefined) {
           setUserData(response);
-         
+
         }
       }
       setUserDataLoading(false);
     };
 
     fetchData();
-  }, [dispatch, authStatus, setHasProfile, user, userId, setUser ]);
+  }, [dispatch, authStatus, setHasProfile, user, userId, setUser]);
 
 
   useEffect(() => {
@@ -167,7 +177,7 @@ useEffect(() => {
 
   const handleButtonClick = () => {
     console.log('Button clicked');
-    setShowForm(true);
+    setShowForm(prevShowForm => !prevShowForm);
   };
 
   const handleSubscrtionPlanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -192,43 +202,63 @@ useEffect(() => {
       price = '49.99';
     }
 
+    // Create a copy of the current userSubscription before making any changes
+    const currentSubscription = { ...userSubscription };
+
+    console.log('current subscription plan', currentSubscription?.subscriptionPlan?.subscriptionPlanID);
+
+    // Check if the user is downgrading their subscription
+    let isDowngrading = currentSubscription?.subscriptionPlan?.subscriptionPlanID > subscriptionPlanID;
+    console.log('isDowngrading', isDowngrading);
     // If a paid subscription was selected, redirect to PayPal
     if (price) {
       const updatedSubscription = await redirectToPayPal(userSubscriptionDTO, price); // Await the redirectToPayPal function
       setIsUpdateSuccessful(true);
       setSubscriptionUpdated(true);
 
-      localStorage.setItem('userSubscription', JSON.stringify(updatedSubscription)); // Update the local storage
-      dispatch(userSubscriptionSlice.actions.setUserSubscription(updatedSubscription)); // Dispatch the action with the returned data
-      //   setShowSubscriptionForm(false);
-      //  setLocalUserSubscription(updatedSubscription);
-      // setShowSuccessMessage(true);
+      if (typeof updatedSubscription === 'object' && updatedSubscription !== null && 'isActive' in updatedSubscription && updatedSubscription.isActive) {
+        localStorage.setItem('userSubscription', JSON.stringify(updatedSubscription)); // Update the local storage
+        dispatch(userSubscriptionSlice.actions.setUserSubscription(updatedSubscription)); // Dispatch the action with the returned data
+      }
       setShowForm(false);
+      // Set the message based on whether the user is downgrading or not
+      if (isDowngrading) {
+        setMessage('You have downgraded your subscription. Your current subscription will remain active until the end of the paid period.');
+      } else {
+        setMessage('Subscription Successful!, Redirecting to dashboard...');
+      }
     } else {
       try {
         const response = await axios.post('http://192.168.1.80:5053/api/Subscription/subscription', userSubscriptionDTO);
         console.log(response.data);
-        setMessage('Subscription Successful!, Redirecting to dashboard...');
 
         setIsUpdateSuccessful(true);
         setSubscriptionUpdated(true);
 
-        setLocalUserSubscription(response.data);
-        localStorage.setItem('userSubscription', JSON.stringify(response.data)); // Update the local storage
-        console.log('userSubscriptionDTO', response.data)
-        dispatch(userSubscriptionSlice.actions.setUserSubscription(response.data));
-        //  setShowSuccessMessage(true);
+        if (response.data.isActive) {
+          setLocalUserSubscription(response.data);
+          localStorage.setItem('userSubscription', JSON.stringify(response.data)); // Update the local storage
+          console.log('userSubscriptionDTO', response.data)
+          dispatch(userSubscriptionSlice.actions.setUserSubscription(response.data));
+        }
         setShowForm(false);
+        // Set the message based on whether the user is downgrading or not
+        if (isDowngrading) {
+          setMessage('You have downgraded your subscription. Your current subscription will remain active until the end of the paid period.');
+        } else {
+          setMessage('Subscription Successful!, Redirecting to dashboard...');
+        }
+        console.log('isUpdateSuccessful', isUpdateSuccessful)
         console.log('showForm', showForm)
-
-
       } catch (error) {
         console.log(error);
         setMessage('Subscription Failed! Please try again');
       }
-
     }
+
+
   };
+
 
 
   return (
@@ -253,19 +283,31 @@ useEffect(() => {
               <div>
                 <h1>{userSubscription?.subscriptionPlan?.name}</h1>
 
-                <button onClick={handleButtonClick}>Show Form</button>
+                <button onClick={handleButtonClick}>
+                  {showForm ? 'Cancel' : 'Change Subscription'}
+                </button>
+
 
                 <p>Max Track Uploads: {userSubscription?.subscriptionPlan?.maxTrackUploads}</p>
                 <p>Start Date: {moment(userSubscription?.startDate).format('LL')}</p>
                 <p>End Date: {moment(userSubscription?.endDate).format('LL')}</p>
+                {trackCount !== null && trackCount !== undefined && (
+
+
+                  <div>
+                    <div>You have uploaded: {trackCount} tracks</div>
+                  </div>
+                )}
               </div>
 
             )}
 
             {showForm && (
               <>
+
                 <div className="container d-flex justify-content-center py-4 mt-5">
                   <form onSubmit={handleSubmit}>
+
                     <label>
                       Select Subscription:
                       <select value={subscriptionPlanID} onChange={handleSubscrtionPlanChange}>
@@ -274,23 +316,21 @@ useEffect(() => {
                         <option value="4">Unlimited Premium Membership (Upload up to 100 tracks, master 20 tracks, AI Access) - $49.99/month</option>
                       </select>
                     </label>
+
                     <input type="submit" value="Submit" />
                   </form>
                   <div id="paypal-button-container"></div>
                 </div>
-                <div className="container d-flex justify-content-center py-4 mt-5">
-                  <div>{message}</div>
-                </div>
+
               </>
             )}
-
-            {trackCount !== null && trackCount !== undefined && (
-
-
-              <div>
-                <div>You have uploaded: {trackCount} tracks</div>
+            {!showForm && (
+              <div className="container d-flex justify-content-center py-4">
+                <div>{message}</div>
               </div>
             )}
+
+
           </div>
         )}
       </div>
