@@ -325,7 +325,7 @@ const Dashboard: React.FC = () => {
               </>
             )}
             {!showForm && (
-              <div className="container d-flex justify-content-center py-4">
+              <div className="container d-flex justify-content-center pt-4">
                 <div>{message}</div>
               </div>
             )}

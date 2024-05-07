@@ -36,7 +36,7 @@ app.use(bodyParser.json({ limit: '100mb' }));
 
 
 app.post('/fetchData', (req: Request, res: Response) => {
-  const url = '/api/Track/1036';
+  const url = `/api/Track/${req.body.trackId}`;
   console.log('Fetching data from:', url)
   const apiKey = '2555cad4-34a6-427a-a2e8-965f848f69fc';
   axios({

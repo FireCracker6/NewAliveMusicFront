@@ -56,8 +56,9 @@ export const likeComment = createAsyncThunk(
         'commentsLikes/fetchLikedComments',
         async (userId: string) => {
             const response = await axios.get(`http://192.168.1.80:5053/api/CommentLikes/getlikedcomments/${userId}`);
-            console.log('response from fetchLikedComments', response.data.$values);
-            return response.data;
+          if (response.data)  console.log('response from fetchLikedComments', response.data.$values); 
+          { return response.data; }
+
         }
     );
 
@@ -166,8 +167,10 @@ export const commentsLikesSlice = createSlice({
           state.loading = true;
         });
         builder.addCase(fetchLikedComments.fulfilled, (state, action) => {
+          if (!action.payload.$values) {
           state.likedComments = action.payload.$values.map((commentLike: any) => commentLike.commentID);
           state.loading = false; // Set loading to false when the request is completed
+          }
         });
         builder.addCase(fetchLikedComments.rejected, (state) => {
           state.loading = false; // Set loading to false if the request fails

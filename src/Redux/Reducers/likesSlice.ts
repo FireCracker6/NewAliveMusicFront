@@ -46,8 +46,10 @@ export const fetchLikedTracks = createAsyncThunk(
       return rejectWithValue('Invalid userId');
     }
     const response = await axios.get(`http://192.168.1.80:5053/api/Likes/${userId}`);
+    if (response.data) { 
     console.log('response from fetchLikedTracks', response.data.$values);
     return response.data;
+  }
   }
 );
 
@@ -130,10 +132,10 @@ const likesSlice = createSlice({
       state.likedTrackIDs = action.payload;
     })
     .addCase(fetchLikedTracks.fulfilled, (state, action) => {
-      if (Array.isArray(action.payload.data.$values)) {
+      if (action.payload && action.payload.data && Array.isArray(action.payload.data.$values)) {
         state.likedTracks = action.payload.data.$values.map((like: any) => like.trackID);
       } else {
-        console.error('action.payload.data.$values is not an array:', action.payload.data.$values);
+        console.error('action.payload.data.$values is not an array:', action.payload.data ? action.payload.data.$values : 'action.payload.data is null');
       }
     })
    

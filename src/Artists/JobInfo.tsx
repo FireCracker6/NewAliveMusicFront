@@ -7,9 +7,10 @@ interface JobInfoProps {
     apiKey: string;
     trackUrl: string;
     blobName: string;
+    trackId: number;
 }
 
-const JobInfo: React.FC<JobInfoProps> = ({ jobId, apiKey, trackUrl, blobName }) => {
+const JobInfo: React.FC<JobInfoProps> = ({ jobId, apiKey, trackUrl, trackId, blobName }) => {
     const [jobInfo, setJobInfo] = useState<JobInfoProps | null>(null);
     const [resultData, setResultData] = useState<Segment[]>([]);
     const [startMixingClicked, setStartMixingClicked] = useState(false);
@@ -85,7 +86,7 @@ const JobInfo: React.FC<JobInfoProps> = ({ jobId, apiKey, trackUrl, blobName }) 
             console.log('Fetching result data...');
             const resultUrl = data.result['Output 1'];
             const proxyUrl = `http://192.168.1.80:3001/fetchData`; // Use the new route
-            const response = await axios.post(proxyUrl, { url: resultUrl }, { responseType: 'blob' });
+            const response = await axios.post(proxyUrl, { trackId: trackId }, { responseType: 'blob' });
             console.log(response.data);
             const newFile = new File([response.data], 'newMix.mp3');
             if (blobName) {

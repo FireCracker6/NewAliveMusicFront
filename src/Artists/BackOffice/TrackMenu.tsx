@@ -69,8 +69,7 @@ const TrackMenu = ({ track, jobId, apiKey, trackUrl, setBlobName, removeTrackByI
             {/* <button onClick={() => handleOptionClick('removeInstrument')}>Remove Instrument</button>
             <button onClick={() => handleOptionClick('removeVocals')}>Remove Vocals</button> */}
 
-            {selectOption === 'master' && <JobInfo jobId={jobId} apiKey={apiKey} trackUrl={trackUrl} blobName={localBlobName} />}
-
+{selectOption === 'master' && <JobInfo jobId={jobId} apiKey={apiKey} trackUrl={trackUrl} blobName={localBlobName} trackId={track.trackID} />}
      
         </>
     );

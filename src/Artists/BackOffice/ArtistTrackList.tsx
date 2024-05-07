@@ -29,6 +29,8 @@ interface Track {
 const ArtistTracksList: React.FC = () => {
   const { userSubscription } = useUserSubscription();
   const artistId = userSubscription?.artists?.$values[0]?.artistID;
+  console.log('Artist ID:', artistId);
+  const [localArtistId, setLocalArtistId] = useState<number | null>(null);
   const [tracks, setTracks] = useState<Track[]>([]);
   const [artistName, setArtistName] = useState<string | null>(null);
   const [artistPicturePath, setArtistPicturePath] = useState<string | null>(null);
@@ -52,9 +54,21 @@ const ArtistTracksList: React.FC = () => {
   
     return true;
   };
+
   useEffect(() => {
+    setLocalArtistId(artistId);
+  }, [artistId]);
+
+  useEffect(() => {
+   
+    
     const fetchTracks = async () => {
-      const response = await axios.get(`http://192.168.1.80:5053/api/Track/artist/${artistId}`);
+      if (!localArtistId) {
+        return;
+      }
+      const url = `http://192.168.1.80:5053/api/Track/artist/${localArtistId}`;
+      console.log('API call URL:', url);
+      const response = await axios.get(`http://192.168.1.80:5053/api/Track/artist/${localArtistId}`);
       const data = resolveJsonReferences(response.data);
       setTracks(data as Track[]);
       if (response.data.$values[0]) {
@@ -86,7 +100,9 @@ const ArtistTracksList: React.FC = () => {
     };
   
     fetchTracks();
-  }, [artistId]);
+  }, [localArtistId]);
+
+
   useEffect(() => {
     console.log('blobName', blobName);
   }, [blobName]);

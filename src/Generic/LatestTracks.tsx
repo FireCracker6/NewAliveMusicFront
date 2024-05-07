@@ -62,7 +62,7 @@ const LatestTracks: React.FC = () => {
     const following = useSelector((state: RootState) => state.followers.following);
     const followCount = useSelector((state: RootState) => state.followers.followCount);
     const followersCountState = useSelector((state: RootState) => state.followers.followersCountState);
-
+    const trackID = useRef<number>(0); // Declare the trackID ref
     const likedTracks = useSelector((state: RootState) => state.likes.likedTracks);
     const [visibleCommentFormTrackId, setVisibleCommentFormTrackId] = useState<Number | null>(null);
     const [showForm, setShowForm] = useState(true);
@@ -152,7 +152,11 @@ const LatestTracks: React.FC = () => {
             const fetchArtists = async () => {
                 const response = await axios.get('http://192.168.1.80:5053/api/Artist/getallartists');
                 const data = resolveJsonReferences(response.data.$values);
+                if (response.data) {
+               
                 console.log('Artists:', data);
+               }
+           
     
                 const artistData = data.map((item: any) => item.data) as Artist[];
                 setArtists(artistData);
@@ -176,7 +180,7 @@ const LatestTracks: React.FC = () => {
         const userEmail = localStorage.getItem('email');
     
         if (userId) {
-        const trackID = useRef<number>(0); // Declare the trackID ref
+       
 
         console.log('trackid', id);
         trackID.current = id; // Update the ref here

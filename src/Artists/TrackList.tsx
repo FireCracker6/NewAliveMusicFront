@@ -175,9 +175,11 @@ const TracksList: React.FC = () => {
   useEffect(() => {
     const fetchTracks = async () => {
       const response = await axios.get(`http://192.168.1.80:5053/api/Track/artist/${artistId}`);
+      console.log('Fetched tracks:', response);
       const data = resolveJsonReferences(response.data);
+      console.log('Fetched tracks:', data);
       setTracks(data as Track[]);
-      if (response.data.$values[0]) {
+      if (response.data.$values && response.data.$values[0]) {
         if (response.data.$values[0].album) {
           setArtistName(response.data.$values[0].album.artist.artistName);
           setArtistPicturePath(response.data.$values[0].album.artist.artistPicturePath);
