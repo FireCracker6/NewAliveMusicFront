@@ -131,7 +131,7 @@ function App() {
         <Route path="/google-auth" element={<GoogleAuthHandler />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/" element={<PrivateRoute component={Dashboard} />} />
+       
       
 
 
